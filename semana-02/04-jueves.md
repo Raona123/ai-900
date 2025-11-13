@@ -2,7 +2,7 @@
 
 ---
 
-## 📖 JUEVES 13 NOV (1.5 horas) - Azure Machine Learning Workspace
+## 📖 JUEVES 13 NOV (1.5 horas) - Azure ML Workspace
 
 ### 🎯 Objetivo del día
 
