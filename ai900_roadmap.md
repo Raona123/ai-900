@@ -32,10 +32,10 @@ Semana 1: Fundamentos de IA
 
 Semana 2: Machine Learning en profundidad
   Lun 10 ✅ Tipos de ML profundo
-  Mar 11 📅 Regresión y métricas
-  Mié 12 📅 Clasificación y métricas
-  Jue 13 📅 Azure ML workspace
-  Vie 14 📅 AutoML
+  Mar 11 ✅ Regresión y métricas
+  Mié 12 ✅ Clasificación y métricas
+  Jue 13 ✅ Azure ML workspace
+  Vie 14 ✅ AutoML
   Sáb 15 📅 Lab: Crear primer modelo
   Dom 16 📅 Descanso
 
