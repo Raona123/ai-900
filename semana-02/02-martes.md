@@ -408,78 +408,6 @@ R² = 0.95 (explico 95% de la variabilidad)
 
 ---
 
-## 🎓 PREGUNTAS TIPO EXAMEN
-
-### Pregunta 1:
-
-**Has entrenado un modelo de regresión para predecir ventas mensuales. El modelo tiene un R² de 0.85. ¿Qué significa esto?**
-
-A) El modelo se equivoca en promedio por 0.85 unidades
-B) El modelo es 85% preciso
-C) El modelo explica 85% de la variabilidad en las ventas ✅
-D) El modelo tiene 85% de probabilidad de ser correcto
-
-**Por qué C:** R² mide qué porcentaje de la variabilidad de los datos explica el modelo.
-
----
-
-### Pregunta 2:
-
-Tienes dos modelos de regresión para predecir precios:
-
-- Modelo A: MAE = 5,000€, RMSE = 5,200€
-- Modelo B: MAE = 5,000€, RMSE = 8,000€
-
-¿Qué puedes concluir?
-
-A) Ambos modelos son idénticos
-B) Modelo B tiene errores más grandes y variables ✅
-C) Modelo A es peor que Modelo B
-D) No se puede determinar cuál es mejor
-
-**Por qué B:** Si RMSE es mucho mayor que MAE, significa que hay errores grandes (outliers) que están siendo penalizados. Modelo B tiene RMSE mucho mayor = errores más variables.
-
----
-
-### Pregunta 3:
-
-**¿Cuál de estas métricas de regresión penaliza MÁS los errores grandes?**
-
-A) MAE
-B) RMSE ✅
-C) R²
-D) Todas por igual
-
-**Por qué B:** RMSE eleva los errores al cuadrado antes de promediarlos, lo que penaliza errores grandes más que MAE.
-
----
-
-### Pregunta 4:
-
-**Un modelo de regresión tiene R² = -0.2. ¿Qué significa esto?**
-
-A) El modelo es excelente
-B) El modelo explica 20% de los datos
-C) El modelo es peor que simplemente predecir el promedio ✅
-D) Hay un error en el cálculo
-
-**Por qué C:** R² negativo significa que el modelo es PEOR que un modelo básico que solo predice el promedio. Es un modelo muy malo.
-
----
-
-### Pregunta 5:
-
-**¿Qué métrica de regresión está en las mismas unidades que la variable objetivo?**
-
-A) Solo MAE
-B) Solo RMSE
-C) MAE y RMSE ✅
-D) R²
-
-**Por qué C:** Tanto MAE como RMSE están en las mismas unidades que lo que predices (euros, metros, días). R² no tiene unidades.
-
----
-
 ## 🔍 CONCEPTOS ADICIONALES IMPORTANTES
 
 ### 1️⃣ Overfitting (Sobreajuste)
@@ -1018,6 +946,246 @@ Modelo B: MAE = 0.8 días, R² = 0.80
 - Cómo Azure ML calcula métricas
 - Interpretación de resultados en Azure ML Studio
 
+## 🎓 PARA EL EXAMEN - PREGUNTAS TÍPICAS
+
+## Pregunta 1
+
+**ES:** _Está_s construyendo un modelo para predecir el consumo energético de un edificio. ¿Qué tipo de problema de Machine Learning es este?_
+
+**EN:** **You are building a model to predict the energy consumption of a building. What type of Machine Learning problem is this?**
+
+**Opciones:**
+A) Classification (Clasificación)  
+B) Regression (Regresión)  
+C) Clustering (Agrupamiento)  
+D) Anomaly Detection (Detección de anomalías)
+
+**Respuesta correcta:** B
+
+**Explicación:**  
+Predecir el consumo energético es un problema de **regresión** porque:
+
+- La variable objetivo es **numérica continua** (kWh, watts)
+- Puede tomar cualquier valor en un rango
+- No son categorías discretas
+
+Ejemplos similares de regresión:
+
+- Predecir temperatura
+- Predecir ventas
+- Predecir precio de acciones
+
+---
+
+## Pregunta 2
+
+**ES:** _¿Qué métrica de regresión penaliza más los errores grandes_
+
+**EN:** _Which regression metric penalizes large errors more?_
+
+**Opciones:**
+A) MAE (Mean Absolute Error)  
+B) RMSE (Root Mean Squared Error)  
+C) R² (R-squared)  
+D) MAPE (Mean Absolute Percentage Error)
+
+**Respuesta correcta:** B
+
+**Explicación:**  
+**RMSE** (Root Mean Squared Error) penaliza más los errores grandes porque:
+
+1. Eleva cada error al cuadrado (error²)
+2. Los errores grandes se magnifican exponencialmente
+3. Ejemplo: error de 10 → 100, error de 2 → 4
+
+**MAE** trata todos los errores linealmente (sin elevar al cuadrado).
+
+**Cuándo usar cada una:**
+
+- **RMSE:** Cuando los errores grandes son muy costosos
+- **MAE:** Cuando todos los errores tienen peso similar
+
+---
+
+## Pregunta 3
+
+**ES:** T*u modelo de regresión tiene un R² de 0.92. ¿Qué significa esto*
+
+**EN:** _Your regression model has an R² of 0.92. What does this mean?_
+
+**Opciones:**
+A) El modelo es 92% preciso  
+B) El modelo explica el 92% de la varianza en los datos  
+C) El modelo tiene un error del 8%  
+D) El modelo está sobreajustado
+
+**Respuesta correcta:** B
+
+**Explicación:**  
+**R² (Coeficiente de determinación)** indica qué porcentaje de la variabilidad de la variable objetivo es explicada por el modelo.
+
+**R² = 0.92 significa:**
+
+- ✅ El modelo explica el 92% de la varianza
+- ✅ Solo el 8% queda sin explicar
+- ✅ Generalmente es un muy buen modelo
+
+**Rango de R²:**
+
+- 1.0 = Perfecto (explica todo)
+- 0.7-0.9 = Bueno
+- 0.4-0.7 = Moderado
+- <0.4 = Pobre
+- Negativo = Peor que predecir la media
+
+---
+
+## Pregunta 4
+
+**ES:** _¿Cuál es la diferencia entre MAE y RMSE?_
+
+**EN:** _What is the difference between MAE and RMSE?_
+
+**Opciones:**
+A) MAE se usa para clasificación, RMSE para regresión  
+B) MAE es la media de errores absolutos, RMSE es la raíz del error cuadrático medio  
+C) No hay diferencia, son lo mismo  
+D) MAE es siempre mayor que RMSE
+
+**Respuesta correcta:** B
+
+**Explicación:**
+
+**MAE (Mean Absolute Error):**
+
+```
+MAE = (|error₁| + |error₂| + ... + |errorₙ|) / n
+```
+
+- Promedio de errores absolutos
+- Todos los errores pesan igual
+- Más intuitivo (mismas unidades que la variable)
+
+**RMSE (Root Mean Squared Error):**
+
+```
+RMSE = √[(error₁² + error₂² + ... + errorₙ²) / n]
+```
+
+- Raíz del promedio de errores al cuadrado
+- Penaliza más los errores grandes
+- Más sensible a outliers
+
+**RMSE ≥ MAE siempre** (debido al cuadrado)
+
+---
+
+## Pregunta 4
+
+**ES:** _Estás evaluando un modelo de predicción de precios de casas. Tu RMSE es $50,000. ¿Qué significa esto en términos prácticos?_
+
+**EN:** _You are evaluating a house price prediction model. Your RMSE is $50,000. What does this mean in practical terms?_
+
+**Opciones:**
+A) El modelo predice exactamente $50,000 por casa  
+B) El modelo tiene un error promedio de aproximadamente $50,000 en sus predicciones  
+C) El 50% de las predicciones tienen un error de $50,000  
+D) El modelo es 50% preciso
+
+**Respuesta correcta:** B
+
+**Explicación:**  
+RMSE representa el **error promedio típico** del modelo en las mismas unidades que la variable objetivo.
+
+**RMSE = $50,000 significa:**
+
+- En promedio, tus predicciones se desvían ~$50,000 del valor real
+- Si predices una casa en $300,000, el valor real probablemente está entre $250,000-$350,000
+
+**Para evaluar si es bueno o malo:**
+
+- Depende del contexto (rango de precios)
+- Si casas valen $200,000-$500,000 → RMSE aceptable
+- Si casas valen $50,000-$100,000 → RMSE muy alto
+
+---
+
+## Pregunta 5
+
+**ES:** _¿Cuál de estas afirmaciones sobre MAPE es correcta?_
+
+**EN:** _Which of these statements about MAPE is correct?_
+
+**Opciones:**
+A) MAPE siempre es mejor que RMSE para evaluar modelos  
+B) MAPE expresa el error como un porcentaje del valor real  
+C) MAPE funciona bien cuando hay valores objetivo de cero  
+D) MAPE y MAE son exactamente lo mismo
+
+**Respuesta correcta:** B
+
+**Explicación:**  
+**MAPE (Mean Absolute Percentage Error)** expresa el error como porcentaje:
+
+```
+MAPE = (|error| / |valor_real|) × 100
+```
+
+**Ventajas:**
+
+- ✅ Fácil de interpretar (%, sin unidades)
+- ✅ Permite comparar modelos en diferentes escalas
+
+**Desventajas:**
+
+- ❌ NO funciona si hay valores reales = 0 (división por cero)
+- ❌ Sesgo hacia subestimaciones
+- ❌ Penaliza más errores en valores pequeños
+
+**Ejemplo:**
+
+- Valor real: 100, Predicción: 110 → Error: 10%
+- Valor real: 1000, Predicción: 1100 → Error: 10%
+
+---
+
+## Pregunta 6
+
+**ES:** _¿Qué indica un R² negativo en un modelo de regresión?_
+
+**EN:** _What does a negative R² indicate in a regression model?_
+
+**Opciones:**
+A) El modelo es perfecto  
+B) El modelo es peor que simplemente predecir la media de los datos  
+C) Es un error de cálculo, R² no puede ser negativo  
+D) El modelo tiene un 0% de precisión
+
+**Respuesta correcta:** B
+
+**Explicación:**  
+**R² negativo** es posible (aunque raro) y significa:
+
+- Tu modelo es **peor** que una predicción trivial (la media)
+- El modelo está haciendo predicciones muy malas
+- Probablemente hay un error fundamental en el modelo o los datos
+
+**Interpretación de R²:**
+
+- 1.0 = Perfecto
+- 0.7-0.9 = Excelente
+- 0.4-0.7 = Bueno
+- 0.0-0.4 = Pobre
+- 0.0 = Predecir la media (baseline)
+- **Negativo = Peor que predecir la media** 🚨
+
+Cuando ves R² negativo, necesitas revisar:
+
+- Features seleccionadas
+- Preprocesamiento de datos
+- Tipo de modelo elegido
+- Posibles errores en el código
+
 ---
 
 ## 💭 REFLEXIÓN FINAL DEL DÍA
@@ -1030,6 +1198,78 @@ Modelo B: MAE = 0.8 días, R² = 0.80
 
 **Ejemplo de reflexión:**
 "Entendí bien MAE porque es muy directo. R² me costó un poco pero ahora veo que es como un porcentaje de qué tan bien funciona el modelo. En mi trabajo podríamos usar regresión para predecir ventas mensuales..."
+
+---
+
+## 🎓 PREGUNTAS TIPO EXAMEN
+
+### Pregunta 1:
+
+_**Has entrenado un modelo de regresión para predecir ventas mensuales. El modelo tiene un R² de 0.85. ¿Qué significa esto?**_
+
+A) El modelo se equivoca en promedio por 0.85 unidades
+B) El modelo es 85% preciso
+C) El modelo explica 85% de la variabilidad en las ventas ✅
+D) El modelo tiene 85% de probabilidad de ser correcto
+
+**Por qué C:** R² mide qué porcentaje de la variabilidad de los datos explica el modelo.
+
+---
+
+### Pregunta 2:
+
+_Tienes dos modelos de regresión para predecir precios:_
+
+_- Modelo A: MAE = 5,000€, RMSE = 5,200€_
+_- Modelo B: MAE = 5,000€, RMSE = 8,000€_
+
+_¿Qué puedes concluir?_
+
+A) Ambos modelos son idénticos
+B) Modelo B tiene errores más grandes y variables ✅
+C) Modelo A es peor que Modelo B
+D) No se puede determinar cuál es mejor
+
+**Por qué B:** Si RMSE es mucho mayor que MAE, significa que hay errores grandes (outliers) que están siendo penalizados. Modelo B tiene RMSE mucho mayor = errores más variables.
+
+---
+
+### Pregunta 3:
+
+_**¿Cuál de estas métricas de regresión penaliza MÁS los errores grandes?**_
+
+A) MAE
+B) RMSE ✅
+C) R²
+D) Todas por igual
+
+**Por qué B:** RMSE eleva los errores al cuadrado antes de promediarlos, lo que penaliza errores grandes más que MAE.
+
+---
+
+### Pregunta 4:
+
+_**Un modelo de regresión tiene R² = -0.2. ¿Qué significa esto?**_
+
+A) El modelo es excelente
+B) El modelo explica 20% de los datos
+C) El modelo es peor que simplemente predecir el promedio ✅
+D) Hay un error en el cálculo
+
+**Por qué C:** R² negativo significa que el modelo es PEOR que un modelo básico que solo predice el promedio. Es un modelo muy malo.
+
+---
+
+### Pregunta 5:
+
+_**¿Qué métrica de regresión está en las mismas unidades que la variable objetivo?**_
+
+A) Solo MAE
+B) Solo RMSE
+C) MAE y RMSE ✅
+D) R²
+
+**Por qué C:** Tanto MAE como RMSE están en las mismas unidades que lo que predices (euros, metros, días). R² no tiene unidades.
 
 ---
 
