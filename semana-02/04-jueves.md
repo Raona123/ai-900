@@ -1349,6 +1349,356 @@ AutoML por ti:
 
 ---
 
+## 🎓 PARA EL EXAMEN - PREGUNTAS TÍPICAS
+
+## Pregunta 22
+
+**ES:** _¿Cuál es el propósito principal de Azure Machine Learning Workspace?_
+
+**EN:** _What is the main purpose of Azure Machine Learning Workspace?_
+
+**Opciones:**
+A) Solo almacenar datos de entrenamiento  
+B) Ambiente centralizado para gestionar recursos, experimentos y modelos de ML  
+C) Únicamente desplegar modelos en producción  
+D) Solo para visualización de datos
+
+**Respuesta correcta:** B
+
+**Explicación:**  
+**Azure ML Workspace** es el recurso fundamental y centralizado que proporciona:
+
+**Gestión de recursos:**
+
+- ✅ Compute clusters
+- ✅ Compute instances
+- ✅ Datastores
+- ✅ Datasets
+
+**Desarrollo de modelos:**
+
+- ✅ Notebooks
+- ✅ Automated ML
+- ✅ Designer (pipeline visual)
+- ✅ Experiments tracking
+
+**MLOps:**
+
+- ✅ Model registry
+- ✅ Endpoints deployment
+- ✅ Pipelines
+- ✅ Monitoring
+
+**Colaboración:**
+
+- ✅ Múltiples usuarios
+- ✅ Control de acceso (RBAC)
+- ✅ Versionado de modelos
+
+Es el "hub" central para todo el ciclo de vida de ML en Azure.
+
+---
+
+## Pregunta 23
+
+**ES:** _¿Qué tipo de recurso de compute debes usar para ejecutar experimentos largos y entrenar múltiples modelos en paralelo?_
+
+**EN:** _What type of compute resource should you use to run long experiments and train multiple models in parallel?_
+
+**Opciones:**
+A) Compute Instance  
+B) Compute Cluster  
+C) Inference Cluster offset = 0
+D) Local computer
+
+**Respuesta correcta:** B
+
+**Explicación:**  
+**Compute Cluster:**
+
+- ✅ Diseñado para entrenamiento de modelos
+- ✅ Escala automáticamente (0 a N nodos)
+- ✅ Ejecución paralela de múltiples jobs
+- ✅ Cost-effective (paga solo lo que usas)
+- ✅ Ideal para AutoML, HPO, batch inference
+
+**Ejemplo configuración:**
+
+```
+- Min nodes: 0 (escala a cero cuando inactivo)
+- Max nodes: 4 (puede crecer hasta 4 nodos en paralelo)
+- VM size: Standard_DS3_v2
+- Idle seconds: 120 (tiempo antes de escalar abajo)
+```
+
+**Compute Instance:**
+
+- Para desarrollo interactivo
+- Jupyter notebooks
+- NO escala automáticamente
+- Siempre un solo nodo
+
+**Comparación:**
+
+```
+Compute Cluster:    Training, AutoML, Batch jobs
+Compute Instance:   Development, Notebooks, Testing
+Inference Cluster:  Production deployments
+```
+
+---
+
+## Pregunta 24
+
+**ES:** _¿Qué es un Datastore en Azure ML?_
+
+**EN:** _What is a Datastore in Azure ML?_
+
+**Opciones:**
+A) Una base de datos SQL en Azure  
+B) Una referencia a un servicio de almacenamiento en Azure (Blob, Data Lake, etc.)  
+C) Un archivo CSV subido directamente al workspace  
+D) Un modelo entrenado guardado en el workspace
+
+**Respuesta correcta:** B
+
+**Explicación:**  
+**Datastore** es una **abstracción** que referencia servicios de almacenamiento de Azure:
+
+**Servicios soportados:**
+
+- Azure Blob Storage
+- Azure Data Lake Gen2
+- Azure File Share
+- Azure SQL Database
+- Azure PostgreSQL
+- Azure MySQL
+
+**Propósito:**
+
+- ✅ Conectar datos sin copiarlos al workspace
+- ✅ Almacenar credenciales de forma segura
+- ✅ Acceso consistente desde experimentos y pipelines
+- ✅ Separar código de datos
+
+**Ejemplo:**
+
+```python
+# Registrar un datastore
+datastore = Datastore.register_azure_blob_container(
+    workspace=ws,
+    datastore_name='my_datastore',
+    container_name='training-data',
+    account_name='mystorageaccount'
+)
+```
+
+**Default datastore:**
+Cada workspace tiene un datastore por defecto (Azure Blob) creado automáticamente.
+
+---
+
+## Pregunta 25
+
+**ES:** _¿Cuál es la diferencia entre un Dataset y un Datastore en Azure ML?_
+**EN:** _What is the difference between a Dataset and a Datastore in Azure ML_
+
+**Opciones:**
+A) Son lo mismo  
+B) Datastore es la conexión al almacenamiento, Dataset es una versión específica de datos  
+C) Dataset solo puede ser CSV, Datastore puede ser cualquier formato  
+D) Datastore se usa para entrenamiento, Dataset para inferencia
+
+**Respuesta correcta:** B
+
+**Explicación:**  
+**Datastore** vs **Dataset:**
+
+**Datastore:**
+
+- Conexión/referencia al servicio de almacenamiento
+- Contiene credenciales de acceso
+- Como un "enlace" al storage
+- Puede contener múltiples archivos/carpetas
+
+**Dataset:**
+
+- Versión específica de datos
+- Puede venir de uno o más datastores
+- Tiene metadata, versionado, perfil
+- Facilita reproducibilidad
+- Dos tipos:
+  - **FileDataset:** Referencias a archivos
+  - **TabularDataset:** Datos en formato tabular
+
+**Analogía:**
+
+```
+Datastore = Conexión a biblioteca 📚
+Dataset = Libro específico con número de edición 📖
+```
+
+**Ejemplo flujo:**
+
+```
+1. Registrar Datastore → Conecta a Azure Blob
+2. Crear Dataset → Selecciona archivos específicos del Blob
+3. Versionar Dataset → V1, V2, V3 (reproducibilidad)
+4. Usar en experimento → ds.to_pandas_dataframe()
+```
+
+---
+
+## Pregunta 26
+
+**ES:** _¿Qué es Azure ML Designer?_
+**EN:** _What is Azure ML Designer_
+
+**Opciones:**
+A) Una herramienta para diseñar interfaces de usuario  
+B) Una interfaz visual de drag-and-drop para crear pipelines de ML sin código  
+C) Un editor de código Python  
+D) Una herramienta solo para diseñar redes neuronales
+
+**Respuesta correcta:** B
+
+**Explicación:**  
+**Azure ML Designer:**
+
+- ✅ Interfaz visual (drag-and-drop)
+- ✅ Crear pipelines de ML sin escribir código
+- ✅ Componentes predefinidos (módulos)
+- ✅ Conectar componentes visualmente
+- ✅ Low-code/No-code approach
+
+**Componentes típicos:**
+
+```
+Data Input → Data Transformation → Model Training → Model Evaluation → Deploy
+```
+
+**Ventajas:**
+
+- Rápido prototyping
+- No requiere experiencia en programación
+- Visualización clara del flujo
+- Reproducible y versionable
+
+**Limitaciones:**
+
+- Menos flexible que código Python
+- No todos los algoritmos disponibles
+- Personalizaciones limitadas
+
+**Ideal para:**
+
+- Citizen data scientists
+- Prototipado rápido
+- Demostrar flujos ML
+- Aprendizaje de ML
+
+---
+
+## Pregunta 27
+
+**ES:** _En Azure ML, ¿qué es un Experiment?_
+**EN:** _In Azure ML, what is an Experiment_
+
+**Opciones:**
+A) Un tipo de algoritmo de ML  
+B) Un contenedor lógico para agrupar ejecuciones (runs) relacionadas  
+C) Un servicio de Azure separado  
+D) Una métrica de evaluación
+
+**Respuesta correcta:** B
+
+**Explicación:**  
+**Experiment:**
+
+- Contenedor lógico para organizar **runs** (ejecuciones)
+- Agrupa intentos relacionados de entrenamiento
+- Facilita comparación de resultados
+- Tracking de métricas e hiperparámetros
+
+**Estructura:**
+
+```
+Workspace
+└── Experiment: "House-Price-Prediction"
+    ├── Run 1: Linear Regression (RMSE: 50000)
+    ├── Run 2: Random Forest (RMSE: 45000)
+    ├── Run 3: XGBoost (RMSE: 42000) ← Mejor
+    └── Run 4: Neural Network (RMSE: 48000)
+```
+
+**Cada Run guarda:**
+
+- Código usado
+- Hiperparámetros
+- Métricas (RMSE, R², etc.)
+- Modelo resultante
+- Logs y outputs
+
+**Beneficios:**
+
+- ✅ Comparar modelos fácilmente
+- ✅ Reproducibilidad
+- ✅ Tracking de progreso
+- ✅ Versionado implícito
+
+---
+
+## Pregunta 28
+
+**ES:** ¿Cuál es el propósito del Model Registry en Azure ML?  
+**EN:** What is the purpose of the Model Registry in Azure ML?
+
+**Opciones:**
+A) Registrar nuevos usuarios en el workspace  
+B) Almacenar y versionar modelos entrenados de forma centralizada  
+C) Registrar nuevas suscripciones de Azure  
+D) Crear backups automáticos del workspace
+
+**Respuesta correcta:** B
+
+**Explicación:**  
+**Model Registry:**
+
+- ✅ Repositorio centralizado de modelos
+- ✅ Versionado automático (v1, v2, v3...)
+- ✅ Metadata asociado (métricas, tags)
+- ✅ Control de acceso
+- ✅ Facilita deployment
+
+**Ciclo de vida del modelo:**
+
+```
+1. Entrenar modelo → Guardar archivo .pkl/.joblib
+2. Registrar en Model Registry → ml_model v1
+3. Tag modelo → "production", "staging", "archived"
+4. Deploy desde registry → Endpoint
+5. Nueva versión → ml_model v2
+```
+
+**Información almacenada:**
+
+- Archivos del modelo
+- Versión
+- Métricas de rendimiento
+- Hiperparámetros
+- Descripción y tags
+- Fecha de creación
+- Run_id que lo creó
+
+**Beneficios:**
+
+- ✅ Trazabilidad completa
+- ✅ Rollback fácil a versiones anteriores
+- ✅ Comparar versiones
+- ✅ Auditoría y compliance
+
+---
+
 ## 🌙 ANTES DE DORMIR (5 min)
 
 **Repaso relámpago:**
