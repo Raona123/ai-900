@@ -1,1360 +1,1207 @@
-# 📚 SEMANA 2 - MACHINE LEARNING EN PROFUNDIDAD
+# 📚 MIÉRCOLES 12 NOV - SEMANA 2: Clasificación y Métricas
+
+**Fecha:** Miércoles 12 de noviembre 2025  
+**Semana:** 2 de 6  
+**Tema:** Clasificación y métricas de evaluación  
+**Duración:** 1 hora 30 minutos
 
 ---
 
-## 📖 MIÉRCOLES 12 NOV (1.5 horas) - Clasificación y sus métricas
+## 🎯 Objetivos del día
 
-### 🎯 Objetivo del día
+Al finalizar hoy deberás:
 
-Entender clasificación en profundidad y cómo evaluar si un modelo de clasificación es bueno
-
----
-
-## 🔄 REPASO RÁPIDO: Regresión vs Clasificación
-
-**AYER (Martes) - REGRESIÓN:**
-
-- Predice: NÚMEROS continuos
-- Ejemplos: precio (150,000€), temperatura (25°C)
-- Métricas: MAE, RMSE, R²
-
-**HOY (Miércoles) - CLASIFICACIÓN:**
-
-- Predice: CATEGORÍAS discretas
-- Ejemplos: spam/no spam, gato/perro, sí/no
-- Métricas: Accuracy, Precision, Recall, F1-Score
+- ✅ Entender qué es clasificación y en qué se diferencia de regresión
+- ✅ Dominar la matriz de confusión (TP, TN, FP, FN)
+- ✅ Comprender las 4 métricas principales: Accuracy, Precision, Recall, F1-Score
+- ✅ **Entender ROC Curve y AUC**
+- ✅ Saber cuándo priorizar Precision vs Recall
+- ✅ Interpretar métricas en contexto real
 
 ---
 
-## 🏷️ ¿QUÉ ES CLASIFICACIÓN?
+## 📖 PARTE 1: ¿Qué es Clasificación? (15 minutos)
 
-### 💡 Concepto fundamental:
+### Definición
 
-**Clasificación = asignar una etiqueta/categoría a cada dato**
+**Clasificación:** Tipo de Machine Learning supervisado donde predices una **categoría** o **clase**.
 
-**Pregunta que responde:** "¿A qué GRUPO pertenece esto?"
+**Diferencia con Regresión:**
 
----
-
-### 📊 TIPOS DE CLASIFICACIÓN:
-
-#### 1️⃣ CLASIFICACIÓN BINARIA (2 categorías)
-
-**Las más comunes:**
-
-- ✅ / ❌ → Sí / No
-- 📧 / 🗑️ → Legítimo / Spam
-- 😊 / 😢 → Positivo / Negativo
-- ✓ / ✗ → Aprueba / No aprueba
-- 💳 / 🚫 → Pago legítimo / Fraude
-
-**Ejemplos:**
-
-1. Email spam detector
-2. Detector de fraude en transacciones
-3. Diagnóstico médico: enfermo / sano
-4. Aprobar o rechazar préstamo
-5. Cliente comprará / no comprará
+- **Regresión:** Predice **números** (precio, temperatura, edad)
+- **Clasificación:** Predice **categorías** (spam/no spam, perro/gato, sano/enfermo)
 
 ---
 
-#### 2️⃣ CLASIFICACIÓN MULTICLASE (3+ categorías)
+### Tipos de clasificación
 
-**Ejemplos:**
+**1. Clasificación Binaria (2 clases)**
 
-- 🐕 🐱 🐦 → Perro / Gato / Pájaro
-- 🔴 🟢 🔵 → Roja / Verde / Azul
-- ⭐⭐⭐⭐⭐ → 1 estrella / 2 / 3 / 4 / 5
-- 🌍 → Europa / Asia / América / África / Oceanía
+- Spam o No spam
+- Fraude o Legítimo
+- Positivo o Negativo (enfermedad)
+- Aprobar o Reprobar
 
-**Ejemplos reales:**
+**2. Clasificación Multiclase (3+ clases)**
 
-1. Clasificar tipos de flores (iris dataset)
-2. Reconocer dígitos escritos a mano (0-9)
-3. Clasificar noticias por categoría
-4. Identificar idioma de un texto
-5. Diagnóstico médico con múltiples enfermedades
+- Tipo de flor (setosa, versicolor, virginica)
+- Categoría de producto (electrónica, ropa, hogar)
+- Nivel de riesgo (bajo, medio, alto)
+- Reconocimiento de dígitos (0-9)
+
+**3. Clasificación Multilabel**
+
+- Un ítem puede pertenecer a múltiples clases
+- Ejemplo: Una película puede ser "Acción" Y "Comedia" Y "Sci-Fi"
 
 ---
 
-### 🎯 ¿Cómo funciona un clasificador?
+### Ejemplos del mundo real
 
-**Proceso:**
+**Medicina:**
+
+- Diagnóstico: ¿Tiene cáncer? (sí/no)
+- Tipo de tumor: benigno, maligno, metastásico
+
+**Finanzas:**
+
+- Aprobación de crédito: aprobar/rechazar
+- Nivel de riesgo: bajo, medio, alto
+
+**Marketing:**
+
+- Probabilidad de compra: comprará/no comprará
+- Segmentación de clientes: premium, regular, básico
+
+**Tecnología:**
+
+- Filtro de spam: spam/legítimo
+- Reconocimiento de voz: 10 dígitos (0-9)
+- Moderación de contenido: apropiado/inapropiado
+
+---
+
+## 📖 PARTE 2: Matriz de Confusión (20 minutos)
+
+### ¿Qué es?
+
+**La matriz de confusión** muestra cómo se desempeña tu modelo comparando predicciones vs realidad.
+
+**Para clasificación binaria:**
 
 ```
-INPUT (datos)
-    ↓
-[MODELO CLASIFICADOR]
-    ↓
-OUTPUT (categoría predicha)
-```
-
-**Ejemplo concreto - Detector de spam:**
-
-```
-INPUT: Email
-- Contiene: "¡Gana dinero rápido!"
-- Remitente: desconocido@spam.com
-- 10 signos de exclamación
-- 5 enlaces sospechosos
-    ↓
-[MODELO]
-    ↓
-OUTPUT: SPAM ✅ (Confianza: 98%)
+                    PREDICCIÓN
+                 Negativo  Positivo
+                 ─────────────────
+REALIDAD  Neg |     TN        FP
+          Pos |     FN        TP
 ```
 
 ---
 
-## 🎭 LA MATRIZ DE CONFUSIÓN
+### Los 4 elementos clave
 
-### 📊 ¿Qué es?
+**1. True Positive (TP) - Verdadero Positivo**
 
-**La herramienta CLAVE para evaluar clasificadores.**
+- **Realidad:** Positivo
+- **Predicción:** Positivo
+- **Resultado:** ✅ CORRECTO
+- **Ejemplo:** Email es spam y el modelo lo detecta como spam
 
-Una tabla que muestra:
+**2. True Negative (TN) - Verdadero Negativo**
 
-- ¿Qué predijo el modelo?
-- ¿Qué era realmente?
+- **Realidad:** Negativo
+- **Predicción:** Negativo
+- **Resultado:** ✅ CORRECTO
+- **Ejemplo:** Email es legítimo y el modelo lo clasifica como legítimo
+
+**3. False Positive (FP) - Falso Positivo**
+
+- **Realidad:** Negativo
+- **Predicción:** Positivo
+- **Resultado:** ❌ ERROR (Falsa alarma)
+- **Ejemplo:** Email es legítimo pero el modelo lo marca como spam
+- **También llamado:** Error Tipo I
+
+**4. False Negative (FN) - Falso Negativo**
+
+- **Realidad:** Positivo
+- **Predicción:** Negativo
+- **Resultado:** ❌ ERROR (Se me escapó)
+- **Ejemplo:** Email es spam pero pasa como legítimo
+- **También llamado:** Error Tipo II
 
 ---
 
-### 💡 EXPLICACIÓN CON EJEMPLO: Detector de Spam
+### Ejemplo completo: Detector de spam
 
-**Imagina que evaluaste 100 emails:**
+**Datos:**
 
 ```
-MATRIZ DE CONFUSIÓN
-
-                    LO QUE REALMENTE ERA
-                  ┌─────────────┬─────────────┐
-                  │  Legítimo   │    Spam     │
-    ┌─────────────┼─────────────┼─────────────┤
-    │  Legítimo   │     50      │      5      │
-LO  │             │   (TN)      │    (FN)     │
-QUE ├─────────────┼─────────────┼─────────────┤
-PRE │    Spam     │     10      │     35      │
-DIJE│             │   (FP)      │    (TP)     │
-    └─────────────┴─────────────┴─────────────┘
+100 emails en total:
+- 60 son legítimos (reales)
+- 40 son spam (reales)
 ```
 
-**Desglose:**
-
-- **50 Legítimos correctos (TN):** Predije "legítimo" y ERA legítimo ✅
-- **35 Spam correctos (TP):** Predije "spam" y ERA spam ✅
-- **10 Falsos positivos (FP):** Predije "spam" pero era legítimo ❌
-- **5 Falsos negativos (FN):** Predije "legítimo" pero era spam ❌
-
----
-
-### 🔑 LOS 4 TÉRMINOS CLAVE:
-
-#### 1️⃣ TRUE POSITIVE (TP) - Verdadero Positivo ✅✅
-
-**"Dije que SÍ, y tenía razón"**
-
-**Ejemplo spam:**
-
-- Predije: "Esto ES spam"
-- Realidad: "Sí, ERA spam"
-- ✅ ¡Acierto!
-
-**Otros ejemplos:**
-
-- Diagnóstico: "Tienes la enfermedad" → y sí la tiene
-- Fraude: "Es fraude" → y sí es fraude
-- Calidad: "Producto defectuoso" → y sí está defectuoso
-
----
-
-#### 2️⃣ TRUE NEGATIVE (TN) - Verdadero Negativo ✅✅
-
-**"Dije que NO, y tenía razón"**
-
-**Ejemplo spam:**
-
-- Predije: "Esto NO es spam"
-- Realidad: "Correcto, NO era spam"
-- ✅ ¡Acierto!
-
-**Otros ejemplos:**
-
-- Diagnóstico: "NO tienes la enfermedad" → y no la tiene
-- Fraude: "NO es fraude" → y no es fraude
-- Calidad: "Producto bueno" → y sí está bueno
-
----
-
-#### 3️⃣ FALSE POSITIVE (FP) - Falso Positivo ❌ (Error Tipo I)
-
-**"Dije que SÍ, pero me equivoqué"**
-
-**Ejemplo spam:**
-
-- Predije: "Esto ES spam"
-- Realidad: "No, era un email importante"
-- ❌ ¡Error grave! Perdiste un email importante
-
-**Otros ejemplos:**
-
-- Diagnóstico: "Tienes cáncer" → pero NO lo tiene (alarma innecesaria)
-- Fraude: "Es fraude" → pero era una compra legítima (bloqueas al cliente)
-- Alarma incendios: Suena → pero NO hay fuego
-
-**Consecuencia:** Falsa alarma, pánico innecesario, molestias
-
----
-
-#### 4️⃣ FALSE NEGATIVE (FN) - Falso Negativo ❌ (Error Tipo II)
-
-**"Dije que NO, pero me equivoqué"**
-
-**Ejemplo spam:**
-
-- Predije: "Esto NO es spam"
-- Realidad: "Sí era spam" → llega a tu bandeja
-- ❌ Error molesto, pero menos grave
-
-**Otros ejemplos:**
-
-- Diagnóstico: "NO tienes cáncer" → pero SÍ lo tiene (peligrosísimo)
-- Fraude: "NO es fraude" → pero SÍ es fraude (pierdes dinero)
-- Seguridad aeropuerto: "NO hay amenaza" → pero SÍ la hay (desastre)
-
-**Consecuencia:** Peligro no detectado, problema pasa desapercibido
-
----
-
-### 🎯 RESUMEN VISUAL:
+**Matriz de confusión:**
 
 ```
-┌─────────────────────────────────────────────────────┐
-│                  REALIDAD                           │
-│              Positivo      Negativo                 │
-├─────────────────────────────────────────────────────┤
-│ PREDICCIÓN                                          │
-│              ┌──────────┬──────────┐                │
-│  Positivo    │    TP    │    FP    │                │
-│              │    ✅✅  │    ❌    │                │
-│              │ ¡Acierto!│ Falsa    │                │
-│              │          │ alarma   │                │
-│              ├──────────┼──────────┤                │
-│  Negativo    │    FN    │    TN    │                │
-│              │    ❌    │    ✅✅  │                │
-│              │ ¡Perdí   │ ¡Acierto!│                │
-│              │  algo!   │          │                │
-│              └──────────┴──────────┘                │
-└─────────────────────────────────────────────────────┘
+                    Predicción
+                 Legítimo    Spam
+                 ──────────────────
+Real  Legítimo      50        10    ← TN=50, FP=10
+      Spam           5        35    ← FN=5,  TP=35
 ```
+
+**Interpretación:**
+
+- **TP = 35:** Detectó correctamente 35 emails spam
+- **TN = 50:** Identificó correctamente 50 emails legítimos
+- **FP = 10:** Marcó incorrectamente 10 emails legítimos como spam (¡problema!)
+- **FN = 5:** Dejó pasar 5 emails spam al inbox
 
 ---
 
-## 📏 MÉTRICAS DE CLASIFICACIÓN
+### Consejos para recordar
 
-### 🎯 Las 4 métricas principales:
+**Trucos nemotécnicos:**
 
-```
-MÉTRICAS DE CLASIFICACIÓN
-│
-├── 1. Accuracy (Precisión Global)
-├── 2. Precision (Precisión)
-├── 3. Recall (Exhaustividad/Sensibilidad)
-└── 4. F1-Score (Balance entre Precision y Recall)
-```
+**True/False** = ¿La predicción fue correcta?
+
+- **True** → Acerté ✅
+- **False** → Me equivoqué ❌
+
+**Positive/Negative** = ¿Qué predije?
+
+- **Positive** → Dije "SÍ"
+- **Negative** → Dije "NO"
+
+**Combinaciones:**
+
+- **True Positive:** Dije SÍ y acerté ✅
+- **True Negative:** Dije NO y acerté ✅
+- **False Positive:** Dije SÍ pero me equivoqué ❌ (falsa alarma)
+- **False Negative:** Dije NO pero me equivoqué ❌ (se me escapó)
 
 ---
 
-## 1️⃣ ACCURACY (Precisión Global)
+## 📖 PARTE 3: Las 4 Métricas Principales (25 minutos)
 
-### 📊 ¿Qué mide?
+### 1️⃣ ACCURACY (Exactitud)
 
-**"¿Qué porcentaje de predicciones fueron correctas?"**
+**¿Qué mide?**
+"¿Qué porcentaje de predicciones fueron correctas?"
 
-**Fórmula en palabras:**
+**Fórmula:**
 
 ```
-Accuracy = (Aciertos totales) / (Total de predicciones)
-
 Accuracy = (TP + TN) / (TP + TN + FP + FN)
+Accuracy = Aciertos totales / Total de predicciones
 ```
 
----
-
-### 💡 Ejemplo con números:
-
-**Matriz de confusión del detector de spam:**
+**Ejemplo del detector de spam:**
 
 ```
-                Legítimo    Spam
-Legítimo           50        5
-Spam               10       35
-
-Total emails: 100
-```
-
-**Cálculo:**
-
-```
-TP = 35 (spam detectado correctamente)
-TN = 50 (legítimo detectado correctamente)
-FP = 10 (falsa alarma)
-FN = 5 (spam no detectado)
-
-Accuracy = (TP + TN) / Total
-Accuracy = (35 + 50) / 100
-Accuracy = 85 / 100
-Accuracy = 0.85 = 85%
+Accuracy = (35 + 50) / 100 = 85 / 100 = 0.85 = 85%
 ```
 
 **Interpretación:**
 "El modelo acierta el 85% de las veces"
 
----
+**✅ Ventajas:**
 
-### ✅ Ventajas de Accuracy:
+- Súper fácil de entender
+- Intuitivo para explicar
+- Métrica más común
 
-✅ **Súper fácil de entender:** "Acierto X% de las veces"
-✅ **Intuitivo para explicar a no técnicos**
-✅ **Métrica más común y popular**
+**⚠️ PROBLEMA GRAVE: Clases desbalanceadas**
 
----
-
-### ⚠️ PROBLEMA GRAVE con Accuracy: Clases desbalanceadas
-
-**Ejemplo: Detector de fraude**
+**Ejemplo:**
 
 ```
-Tienes 1000 transacciones:
+1000 transacciones bancarias:
 - 950 son legítimas (95%)
 - 50 son fraude (5%)
+
+Modelo TONTO que siempre predice "legítimo":
+Accuracy = 95% ← ¡Parece bueno!
+
+Pero NUNCA detecta fraude ← ¡Es inútil!
 ```
-
-**Modelo TONTO que siempre predice "legítimo":**
-
-```
-                Legítimo    Fraude
-Legítimo          950        50
-Fraude             0         0
-
-Accuracy = (950 + 0) / 1000 = 95%
-```
-
-**¡95% de accuracy! ¿Es bueno?**
-❌ **NO!** El modelo NUNCA detecta fraude
-❌ Es inútil, pero tiene alta accuracy
 
 **Por eso necesitamos Precision y Recall.**
 
 ---
 
-## 2️⃣ PRECISION (Precisión)
+### 2️⃣ PRECISION (Precisión)
 
-### 📊 ¿Qué mide?
+**¿Qué mide?**
+"De todo lo que dije que era POSITIVO, ¿cuánto realmente lo era?"
 
-**"De todo lo que dije que era POSITIVO, ¿cuánto realmente lo era?"**
+**Pregunta clave:** "¿Qué tan confiable soy cuando digo SÍ?"
 
-**Pregunta:** "¿Qué tan confiable soy cuando digo SÍ?"
-
-**Fórmula en palabras:**
+**Fórmula:**
 
 ```
 Precision = TP / (TP + FP)
 Precision = Verdaderos positivos / Todos los que dije positivos
 ```
 
----
-
-### 💡 Ejemplo con spam:
+**Ejemplo del detector de spam:**
 
 ```
-Predije "SPAM" para 45 emails:
-- 35 SÍ eran spam (TP)
-- 10 NO eran spam (FP) ← falsa alarma
-
-Precision = 35 / (35 + 10)
-Precision = 35 / 45
-Precision = 0.78 = 78%
+Predije "SPAM" para 45 emails (TP=35, FP=10)
+Precision = 35 / (35 + 10) = 35 / 45 = 0.78 = 78%
 ```
 
 **Interpretación:**
 "Cuando digo que es spam, tengo razón el 78% de las veces"
 "22% de las veces bloqueo emails legítimos" ← ¡problema!
 
----
+**🎯 ¿Cuándo es importante ALTA Precision?**
 
-### 🎯 ¿Cuándo es importante ALTA Precision?
+Cuando los **Falsos Positivos son MUY costosos:**
 
-**Cuando los FALSOS POSITIVOS son MUY costosos:**
+**Ejemplos:**
 
-**Ejemplo 1: Email spam**
+- **Filtro de spam:** Bloquear email importante como spam (pierdes info crítica)
+- **Condena judicial:** Encarcelar a inocente (injusticia grave)
+- **Diagnóstico médico:** Decir que tiene cáncer cuando no lo tiene (estrés innecesario, tratamientos invasivos)
+- **Recomendaciones:** Recomendar producto irrelevante (molesta al usuario)
 
-- FP = Email importante va a spam
-- Consecuencia: Pierdes información crítica
-- Solución: Precision alta (mejor dejar pasar spam que bloquear importante)
-
-**Ejemplo 2: Recomendación de películas**
-
-- FP = Recomendar película que no le gustará
-- Consecuencia: Usuario molesto, pierde confianza
-- Solución: Precision alta (solo recomendar si estás seguro)
-
-**Ejemplo 3: Publicidad**
-
-- FP = Mostrar anuncio a persona no interesada
-- Consecuencia: Gastas dinero sin retorno
-- Solución: Precision alta (solo mostrar a interesados)
+**Estrategia:** "Prefiero ser conservador y solo decir SÍ cuando estoy muy seguro"
 
 ---
 
-## 3️⃣ RECALL (Exhaustividad / Sensibilidad)
+### 3️⃣ RECALL (Exhaustividad/Sensibilidad)
 
-### 📊 ¿Qué mide?
+**¿Qué mide?**
+"De todos los casos POSITIVOS reales, ¿cuántos detecté?"
 
-**"De todo lo que ERA positivo, ¿cuánto logré detectar?"**
+**Pregunta clave:** "¿Qué tan completo soy en encontrar todos los casos positivos?"
 
-**Pregunta:** "¿Qué tan bueno soy para NO dejar escapar cosas?"
-
-**Fórmula en palabras:**
+**Fórmula:**
 
 ```
 Recall = TP / (TP + FN)
 Recall = Verdaderos positivos / Todos los positivos reales
 ```
 
----
-
-### 💡 Ejemplo con spam:
+**Ejemplo del detector de spam:**
 
 ```
-Había 40 emails de spam en total:
-- 35 los detecté como spam (TP)
-- 5 pasaron como legítimos (FN) ← se me escaparon
-
-Recall = 35 / (35 + 5)
-Recall = 35 / 40
-Recall = 0.875 = 87.5%
+Había 40 emails spam reales (TP=35, FN=5)
+Recall = 35 / (35 + 5) = 35 / 40 = 0.875 = 87.5%
 ```
 
 **Interpretación:**
-"Detecto el 87.5% del spam que existe"
-"El 12.5% del spam se me escapa a la bandeja principal" ← problema
+"Detecto el 87.5% de todos los emails spam"
+"Se me escapan el 12.5% de los spam" ← algunos llegan al inbox
+
+**🎯 ¿Cuándo es importante ALTO Recall?**
+
+Cuando los **Falsos Negativos son MUY peligrosos:**
+
+**Ejemplos:**
+
+- **Detector de cáncer:** NO detectar cáncer cuando sí existe (paciente no recibe tratamiento → fatal)
+- **Detector de fraude:** NO detectar fraude real (pierdes dinero)
+- **Sistema antivirus:** NO detectar malware (computadora infectada)
+- **Detección de fallas:** NO detectar falla en motor de avión (catastrófico)
+
+**Estrategia:** "Prefiero revisar más casos (incluso falsos positivos) con tal de NO perderme ningún caso real"
 
 ---
 
-### 🎯 ¿Cuándo es importante ALTO Recall?
+### 4️⃣ F1-SCORE
 
-**Cuando los FALSOS NEGATIVOS son MUY peligrosos:**
+**¿Qué mide?**
+"Balance entre Precision y Recall"
 
-**Ejemplo 1: Detector de cáncer**
-
-- FN = Decir "está sano" cuando tiene cáncer
-- Consecuencia: Paciente muere
-- Solución: Recall altísimo (mejor 10 falsas alarmas que perder 1 caso real)
-
-**Ejemplo 2: Detector de fraude bancario**
-
-- FN = No detectar fraude real
-- Consecuencia: Pierdes millones de euros
-- Solución: Recall alto (mejor bloquear transacciones legítimas que dejar pasar fraude)
-
-**Ejemplo 3: Seguridad aeropuerto**
-
-- FN = No detectar arma/bomba
-- Consecuencia: Desastre
-- Solución: Recall 99.99% (mejor molestar pasajeros que dejar pasar amenaza)
-
----
-
-### 🔥 PRECISION vs RECALL: El trade-off
-
-**El dilema:**
-
-- ↑ Precision → ↓ Recall
-- ↑ Recall → ↓ Precision
-
-**No puedes tener ambos perfectos simultáneamente**
-
----
-
-### 📊 Visualización del trade-off:
+**Fórmula:**
 
 ```
-MODO ESTRICTO (Alta Precision):
-"Solo digo SÍ si estoy 99% seguro"
-→ Alta Precision (cuando digo SÍ, casi siempre acierto)
-→ Baja Recall (me pierdo muchos casos porque soy muy conservador)
-
-Ejemplo: Email spam
-Bloqueo solo spam OBVIO → Pocos falsos positivos (FP bajo)
-Pero mucho spam pasa → Muchos falsos negativos (FN alto)
+F1-Score = 2 × (Precision × Recall) / (Precision + Recall)
 ```
 
-```
-MODO AGRESIVO (Alto Recall):
-"Digo SÍ ante la mínima sospecha"
-→ Alta Recall (atrapo casi todos los positivos)
-→ Baja Precision (muchos falsos positivos)
+Es la **media armónica** de Precision y Recall.
 
-Ejemplo: Detector de cáncer
-Ante mínima duda → "posible cáncer" (no quiero perderme ninguno)
-Detecto todos los casos → Muchas falsas alarmas (FP alto)
-```
-
----
-
-### 🎯 ¿Cuál priorizar?
-
-| Situación                 | Prioriza      | Por qué                                                        |
-| ------------------------- | ------------- | -------------------------------------------------------------- |
-| Email spam                | **Precision** | Peor perder email importante que recibir spam                  |
-| Detector de cáncer        | **Recall**    | Peor no detectar cáncer que falsa alarma                       |
-| Detector de fraude        | **Recall**    | Peor perder dinero que bloquear transacción legítima           |
-| Recomendador de productos | **Precision** | Peor recomendar mal que no recomendar                          |
-| Seguridad aeropuerto      | **Recall**    | Peor dejar pasar amenaza que revisar demás                     |
-| Búsqueda en Google        | **Balance**   | Quieres resultados relevantes (precision) y completos (recall) |
-
----
-
-## 4️⃣ F1-SCORE
-
-### 📊 ¿Qué mide?
-
-**"El balance perfecto entre Precision y Recall"**
-
-**Es la media armónica de Precision y Recall**
-
-**Fórmula en palabras:**
+**Ejemplo:**
 
 ```
-F1 = 2 × (Precision × Recall) / (Precision + Recall)
+Precision = 0.78 (78%)
+Recall = 0.875 (87.5%)
+
+F1 = 2 × (0.78 × 0.875) / (0.78 + 0.875)
+F1 = 2 × 0.6825 / 1.655
+F1 = 1.365 / 1.655
+F1 = 0.825 = 82.5%
+```
+
+**Interpretación:**
+
+- F1 penaliza extremos (solo alta Precision O solo alto Recall)
+- Recompensa balance entre ambos
+- Útil cuando necesitas equilibrio
+
+**🎯 ¿Cuándo usar F1-Score?**
+
+- Cuando tanto FP como FN son problemáticos
+- Clases desbalanceadas
+- Necesitas una métrica única que combine Precision y Recall
+- No tienes preferencia clara entre Precision vs Recall
+
+**Nota:** F1 siempre está entre Precision y Recall (nunca es mayor que ambos).
+
+---
+
+### 📊 Tabla comparativa de métricas
+
+| Métrica       | Fórmula       | Pregunta que responde      | Cuándo priorizar     |
+| ------------- | ------------- | -------------------------- | -------------------- |
+| **Accuracy**  | (TP+TN)/Total | ¿% de aciertos totales?    | Clases balanceadas   |
+| **Precision** | TP/(TP+FP)    | ¿Confiable cuando digo SÍ? | FP muy costosos      |
+| **Recall**    | TP/(TP+FN)    | ¿Detecto todos los SÍ?     | FN muy peligrosos    |
+| **F1-Score**  | 2×(P×R)/(P+R) | ¿Balance P y R?            | Necesitas equilibrio |
+
+---
+
+## 📖 PARTE 4: ROC Curve y AUC (20 minutos)
+
+### ¿Qué es ROC?
+
+**ROC (Receiver Operating Characteristic) Curve:**
+
+Es una **gráfica** que muestra el rendimiento de un clasificador binario en **todos los umbrales posibles**.
+
+**Ejes de la gráfica:**
+
+```
+True Positive Rate (TPR)
+        ↑
+   1.0  |     ●────●
+        |   ●──●        ← Curva ROC
+   0.8  | ●─●            (mejor modelo)
+        |●
+   0.6  |      ╱  ← Línea diagonal
+        |    ╱     (modelo aleatorio)
+   0.4  |  ╱      AUC = 0.5
+        |╱
+   0.2  |
+        |
+   0.0  └─────────────────→
+        0.0  0.2  0.4  0.6  0.8  1.0
+              False Positive Rate (FPR)
+```
+
+**Eje Y - True Positive Rate (TPR):**
+
+- También llamado: **Recall** o **Sensibilidad**
+- Fórmula: TPR = TP / (TP + FN)
+- Pregunta: "¿Qué % de positivos reales detecto?"
+
+**Eje X - False Positive Rate (FPR):**
+
+- Opuesto a: **Especificidad** (FPR = 1 - Especificidad)
+- Fórmula: FPR = FP / (FP + TN)
+- Pregunta: "¿Qué % de negativos reales marco incorrectamente como positivos?"
+
+---
+
+### ¿Cómo se crea la curva ROC?
+
+**Concepto de umbral:**
+
+La mayoría de clasificadores no dan respuesta binaria directa, sino una **probabilidad** o **score**:
+
+**Ejemplo detector de spam:**
+
+```
+Email 1: score = 0.95 → Muy probable spam
+Email 2: score = 0.78 → Probable spam
+Email 3: score = 0.45 → Incierto
+Email 4: score = 0.23 → Probable legítimo
+Email 5: score = 0.05 → Muy probable legítimo
+```
+
+**Puedes elegir diferentes umbrales:**
+
+**Umbral = 0.5** (estándar):
+
+```
+score > 0.5 → SPAM
+score ≤ 0.5 → LEGÍTIMO
+```
+
+**Umbral = 0.8** (conservador):
+
+```
+score > 0.8 → SPAM (más estricto)
+score ≤ 0.8 → LEGÍTIMO
+```
+
+- Menos FP (más Precision)
+- Más FN (menos Recall)
+
+**Umbral = 0.3** (agresivo):
+
+```
+score > 0.3 → SPAM (más permisivo)
+score ≤ 0.3 → LEGÍTIMO
+```
+
+- Más FP (menos Precision)
+- Menos FN (más Recall)
+
+**La curva ROC** representa todos estos puntos para TODOS los umbrales posibles.
+
+---
+
+### ¿Qué es AUC?
+
+**AUC (Area Under the Curve):**
+
+Es el **área bajo la curva ROC**.
+
+**Rango:** 0 a 1
+
+**Interpretación:**
+
+| AUC         | Calidad del modelo             |
+| ----------- | ------------------------------ |
+| **1.0**     | Perfecto (100% separación)     |
+| **0.9-1.0** | Excelente                      |
+| **0.8-0.9** | Muy bueno                      |
+| **0.7-0.8** | Bueno                          |
+| **0.6-0.7** | Pobre                          |
+| **0.5**     | Aleatorio (como lanzar moneda) |
+| **<0.5**    | Peor que aleatorio             |
+
+---
+
+### ¿Qué significa AUC en términos prácticos?
+
+**AUC = 0.85 significa:**
+
+"Si tomas un caso positivo aleatorio y un caso negativo aleatorio, el modelo tiene **85% de probabilidad** de darle mayor score al positivo que al negativo"
+
+**Ejemplo visual:**
+
+```
+Caso positivo real:  score = 0.8
+Caso negativo real:  score = 0.3
+
+Model correcto: 0.8 > 0.3 ✅
+
+Con AUC = 0.85, esto pasa el 85% de las veces
 ```
 
 ---
 
-### 💡 ¿Por qué F1-Score?
+### Ventajas de AUC
 
-**Problema:**
+**✅ Ventajas:**
 
-- Modelo A: Precision = 90%, Recall = 50%
-- Modelo B: Precision = 60%, Recall = 95%
-- ¿Cuál es mejor?
+1. **Métrica única** que resume el rendimiento general
+2. **No depende del umbral** de clasificación
+3. **Funciona bien con clases desbalanceadas**
+4. **Fácil de comparar** diferentes modelos
+5. **Robusta** a distribución de clases
 
-**Promedio simple:**
-
-- Modelo A: (90 + 50) / 2 = 70%
-- Modelo B: (60 + 95) / 2 = 77.5%
-
-❌ Pero promedio simple no captura el balance
-
-**F1-Score (media armónica):**
-
-- Modelo A: F1 = 2×(90×50)/(90+50) = 64.3%
-- Modelo B: F1 = 2×(60×95)/(60+95) = 73.5%
-
-✅ F1 penaliza desequilibrios entre precision y recall
-
----
-
-### 🎯 ¿Cuándo usar F1-Score?
-
-✅ **Cuando necesitas balance entre Precision y Recall**
-✅ **Cuando las clases están desbalanceadas**
-✅ **Como métrica única para comparar modelos**
-✅ **Cuando no puedes decidir si priorizar precision o recall**
-
----
-
-### 📊 Interpretación de F1:
-
-| F1-Score      | Interpretación               |
-| ------------- | ---------------------------- |
-| **0.9 - 1.0** | Excelente balance ⭐⭐⭐⭐⭐ |
-| **0.7 - 0.9** | Buen balance ⭐⭐⭐⭐        |
-| **0.5 - 0.7** | Balance moderado ⭐⭐⭐      |
-| **< 0.5**     | Balance pobre ⭐⭐           |
-
----
-
-## 📊 TABLA COMPARATIVA: Las 4 métricas
-
-| Métrica       | ¿Qué mide?                 | Fórmula       | Cuándo usarla      | Rango |
-| ------------- | -------------------------- | ------------- | ------------------ | ----- |
-| **Accuracy**  | % de aciertos totales      | (TP+TN)/Total | Clases balanceadas | 0 a 1 |
-| **Precision** | ¿Confiable cuando digo SÍ? | TP/(TP+FP)    | FP son costosos    | 0 a 1 |
-| **Recall**    | ¿Detecto todos los SÍ?     | TP/(TP+FN)    | FN son peligrosos  | 0 a 1 |
-| **F1-Score**  | Balance P y R              | 2(P×R)/(P+R)  | Necesitas balance  | 0 a 1 |
-
-**Para todas: Más cerca de 1 = mejor**
-
----
-
-## 🎓 EJEMPLO COMPLETO: Detector de fraude
-
-### Caso: Evaluar detector de fraude bancario
-
-**Evaluaste 1000 transacciones:**
+**Comparación de modelos:**
 
 ```
-MATRIZ DE CONFUSIÓN
-
-                  Legítimo    Fraude
-Legítimo             940        10
-Fraude                30        20
-
-Total: 1000 transacciones
-- 970 legítimas
-- 30 fraude
+Modelo A: AUC = 0.92 → Mejor
+Modelo B: AUC = 0.87 → Bueno
+Modelo C: AUC = 0.73 → Moderado
 ```
-
-**Identificar los valores:**
-
-- TP = 20 (fraude detectado correctamente)
-- TN = 940 (legítimo detectado correctamente)
-- FP = 30 (bloqueé transacción legítima - molestia cliente)
-- FN = 10 (fraude no detectado - perdí dinero)
 
 ---
 
-### 📊 Calcular todas las métricas:
+### Curva ROC perfecta vs aleatoria
 
-**1. Accuracy:**
+**Modelo perfecto (AUC = 1.0):**
+
+```
+TPR
+ ↑
+1.0|●────────────
+   |│
+   |│
+   |│
+   |●
+0.0└───────────→ FPR
+   0.0        1.0
+```
+
+- Va directo a TPR=1.0 con FPR=0
+- Separa perfectamente positivos de negativos
+
+**Modelo aleatorio (AUC = 0.5):**
+
+```
+TPR
+ ↑
+1.0|        ●
+   |      ╱
+   |    ╱
+   |  ╱   ← Línea diagonal
+   |╱
+0.0●───────────→ FPR
+   0.0        1.0
+```
+
+- Línea diagonal de 45 grados
+- No mejor que adivinar al azar
+
+---
+
+### ROC y AUC en Azure AutoML
+
+**En Azure AutoML:**
+
+Puedes elegir **"AUC weighted"** como **primary metric** para clasificación:
+
+```python
+automl_config = AutoMLConfig(
+    task='classification',
+    primary_metric='AUC_weighted',  ← Para optimizar AUC
+    training_data=dataset,
+    label_column_name='target'
+)
+```
+
+**"AUC weighted":**
+
+- Para clasificación multiclase
+- Calcula AUC para cada clase
+- Promedio ponderado por tamaño de clase
+
+---
+
+### Cuándo usar AUC vs otras métricas
+
+**Usa AUC cuando:**
+
+- ✅ Clases desbalanceadas
+- ✅ Costo de FP y FN es similar
+- ✅ Quieres métrica independiente del umbral
+- ✅ Comparar múltiples modelos
+
+**Usa Precision cuando:**
+
+- ✅ FP muy costosos
+- ✅ Necesitas alta confianza en positivos
+
+**Usa Recall cuando:**
+
+- ✅ FN muy peligrosos
+- ✅ No puedes perderte casos positivos
+
+**Usa F1 cuando:**
+
+- ✅ Necesitas balance
+- ✅ Clases desbalanceadas
+
+---
+
+### Ejemplo completo: Detector médico
+
+**Escenario:** Detectar cáncer de mama
+
+**Matriz de confusión:**
+
+```
+                No cáncer    Cáncer
+No cáncer         850          50
+Cáncer             30          70
+```
+
+**Métricas calculadas:**
+
+```
+Accuracy = (850+70)/1000 = 92%
+Precision = 70/(70+50) = 58.3%
+Recall = 70/(70+30) = 70%
+F1 = 2×(0.583×0.70)/(0.583+0.70) = 63.6%
+
+TPR = 70/100 = 0.70
+FPR = 50/900 = 0.056
+
+AUC = 0.89 (calculado considerando todos los umbrales)
+```
+
+**Interpretación:**
+
+- **Alta Accuracy (92%)** pero engañosa (clases desbalanceadas)
+- **Recall moderado (70%)** - detecta 70% de cánceres ⚠️
+- **Precision baja (58.3%)** - muchos falsos positivos
+- **AUC bueno (0.89)** - modelo tiene buena capacidad de discriminación
+
+**Decisión:**
+Para cáncer, **priorizar Recall** (no podemos perdernos casos reales). Ajustar umbral para aumentar Recall, aunque aumente FP.
+
+---
+
+## 📖 PARTE 5: Trade-off Precision vs Recall (10 minutos)
+
+### El dilema fundamental
+
+**NO puedes maximizar ambos simultáneamente** ⚠️
+
+```
+          Alta Precision
+               ↑
+               │
+   Conservador │
+   (digo SÍ solo│
+    si estoy    │
+    muy seguro) │
+               │
+               │
+───────────────┼───────────────→ Alto Recall
+               │
+               │ Agresivo
+               │ (digo SÍ con
+               │  poca evidencia)
+               │
+               ↓
+         Baja Precision
+```
+
+---
+
+### ¿Por qué existe este trade-off?
+
+**Ejemplo detector de spam:**
+
+**Modelo conservador (alta Precision):**
+
+```
+Umbral alto = 0.9
+Solo marca spam si score > 0.9
+
+Resultado:
+✅ Precision alta (pocos FP)
+❌ Recall bajo (muchos FN - spam no detectado)
+```
+
+**Modelo agresivo (alto Recall):**
+
+```
+Umbral bajo = 0.3
+Marca spam si score > 0.3
+
+Resultado:
+✅ Recall alto (pocos FN)
+❌ Precision baja (muchos FP - emails legítimos bloqueados)
+```
+
+---
+
+### ¿Cómo decidir?
+
+**Pregúntate:** "¿Qué error es MÁS costoso?"
+
+**Tabla de decisión:**
+
+| Escenario              | FP más costoso                    | FN más costoso        | Priorizar     |
+| ---------------------- | --------------------------------- | --------------------- | ------------- |
+| Spam email             | Email importante bloqueado        | Spam en inbox         | **Precision** |
+| Detector cáncer        | Estrés por falso positivo         | No tratar cáncer real | **Recall**    |
+| Fraude bancario        | Bloquear transacción legítima     | Perder dinero         | **Recall**    |
+| Recomendación producto | Molestar con producto irrelevante | Perder venta          | **Precision** |
+| Antivirus              | Bloquear programa legítimo        | Infectar computadora  | **Recall**    |
+
+---
+
+## ✅ EJERCICIOS PRÁCTICOS (20 minutos)
+
+### Ejercicio 1: Calcular métricas
+
+**Detector de productos defectuosos en fábrica:**
+
+```
+Matriz de confusión:
+                Bueno    Defectuoso
+Bueno            850         50
+Defectuoso        20         80
+```
+
+**Calcula:**
+
+1. Accuracy
+2. Precision
+3. Recall
+4. F1-Score
+
+<details>
+<summary>Ver solución</summary>
+
+**Identificar valores:**
+
+- TP = 80 (defectuoso detectado correctamente)
+- TN = 850 (bueno detectado correctamente)
+- FP = 50 (falsa alarma - bueno marcado como defectuoso)
+- FN = 20 (error - defectuoso no detectado)
+- Total = 1000
+
+**Cálculos:**
+
+1. **Accuracy:**
 
 ```
 Accuracy = (TP + TN) / Total
-Accuracy = (20 + 940) / 1000
-Accuracy = 960 / 1000 = 0.96 = 96%
+Accuracy = (80 + 850) / 1000
+Accuracy = 930 / 1000 = 0.93 = 93%
 ```
 
-✅ "Acierto el 96% de las veces"
-
----
-
-**2. Precision:**
+2. **Precision:**
 
 ```
 Precision = TP / (TP + FP)
-Precision = 20 / (20 + 30)
-Precision = 20 / 50 = 0.40 = 40%
+Precision = 80 / (80 + 50)
+Precision = 80 / 130 = 0.615 = 61.5%
 ```
 
-⚠️ "Cuando digo que es fraude, solo acierto el 40% de las veces"
-⚠️ "Bloqueo muchas transacciones legítimas (60%)"
-
----
-
-**3. Recall:**
+3. **Recall:**
 
 ```
 Recall = TP / (TP + FN)
-Recall = 20 / (20 + 10)
-Recall = 20 / 30 = 0.67 = 67%
+Recall = 80 / (80 + 20)
+Recall = 80 / 100 = 0.80 = 80%
 ```
 
-⚠️ "Detecto solo el 67% del fraude real"
-⚠️ "El 33% del fraude se me escapa (pierdo dinero)"
-
----
-
-**4. F1-Score:**
+4. **F1-Score:**
 
 ```
 F1 = 2 × (Precision × Recall) / (Precision + Recall)
-F1 = 2 × (0.40 × 0.67) / (0.40 + 0.67)
-F1 = 2 × 0.268 / 1.07
-F1 = 0.50 = 50%
+F1 = 2 × (0.615 × 0.80) / (0.615 + 0.80)
+F1 = 2 × 0.492 / 1.415
+F1 = 0.984 / 1.415 = 0.695 = 69.5%
 ```
 
-❌ "El balance es pobre"
+**Interpretación:**
+
+- Alta Accuracy (93%) - parece bueno
+- Precision moderada (61.5%) - muchos falsos positivos (descartar productos buenos)
+- Recall bueno (80%) - detecta la mayoría de defectos
+- F1 moderado (69.5%) - balance entre P y R
+
+**Problema:** Estamos descartando muchos productos buenos (FP=50). Esto tiene costo económico.
+
+</details>
 
 ---
 
-### 📋 Evaluación completa:
+### Ejercicio 2: Interpretar escenarios
 
-| Métrica   | Valor | Interpretación                 | En definicion de fraude                                                                                      |
-| --------- | ----- | ------------------------------ | ------------------------------------------------------------------------------------------------------------ |
-| Accuracy  | 96%   | ✅ Parece bueno, pero engañoso | Cuando veo que la mayoria NO son fraude                                                                      |
-| Precision | 40%   | ❌ Molesto muchos clientes     | Porcentaje bajo. Cuando digo, que si eran fraude, pero NO lo eran. Alto porcentaje de precision da muchos FN |
-| Recall    | 67%   | ⚠️ Pierdo 1 de cada 3 fraudes  | Porcentaje medio. Cuando digo, que no eran fraude, pero SI lo eran. Alto Porcentaje de Recall da muchos FP   |
-| F1-Score  | 50%   | ❌ Modelo pobre en general     | porcentaje medio. Balance del fraude mediocre                                                                |
-
-**Conclusión:**
-
-- Alta accuracy engaña (porque 97% son legítimos)
-- El modelo es MALO para detectar fraude
-- Necesita mejorar tanto precision como recall
-
----
-
-## 🎓 PREGUNTAS TIPO EXAMEN
-
-### Pregunta 1:
-
-\*\*Un modelo de clasificación tiene estos resultados:
-
-- TP = 80
-- TN = 800
-- FP = 20
-- FN = 100
-
-¿Cuál es la Accuracy del modelo?\*\*
-
-A) 80%
-B) 88% ✅
-C) 44%
-D) 50%
-
-**Cálculo:**
+**Escenario A: Sistema de seguridad aeropuerto**
 
 ```
-Accuracy = (TP + TN) / Total
-Accuracy = (80 + 800) / (80 + 800 + 20 + 100)
-Accuracy = 880 / 1000 = 0.88 = 88%
+Detector de armas:
+Precision = 85%
+Recall = 60%
 ```
 
----
+**Pregunta:** ¿Es aceptable? ¿Qué métrica mejorarías?
 
-### Pregunta 2:
+<details>
+<summary>Ver solución</summary>
 
-**En un detector de enfermedades raras, ¿qué métrica es MÁS importante priorizar?**
+**❌ NO es aceptable**
 
-A) Accuracy
-B) Precision
-C) Recall ✅
-D) F1-Score
+**Problema:** Recall de 60% significa que el 40% de las armas reales NO se detectan. ¡Inaceptable en seguridad!
 
-**Por qué C:** En enfermedades, los falsos negativos (no detectar enfermedad real) son peligrosos. Recall mide qué tan bien detectas TODOS los casos positivos.
+**Solución:** **Priorizar Recall** - debemos detectar TODAS las armas, aunque tengamos más falsas alarmas (revisiones manuales extra).
 
----
+**Trade-off:** Aceptar baja Precision (más revisiones manuales) para maximizar Recall (seguridad).
 
-### Pregunta 3:
-
-**¿Qué representa un Falso Positivo (FP) en un detector de spam?**
-
-A) Email spam correctamente identificado como spam
-B) Email legítimo correctamente identificado como legítimo
-C) Email legítimo incorrectamente identificado como spam ✅
-D) Email spam incorrectamente identificado como legítimo
-
-**Por qué C:** Falso Positivo = dijiste "positivo (spam)" pero era falso (legítimo).
+</details>
 
 ---
 
-### Pregunta 4:
-
-**Tienes un modelo con Precision = 0.90 y Recall = 0.50. ¿Qué significa?**
-
-A) El modelo es excelente
-B) El modelo es muy confiable cuando predice positivo, pero se pierde muchos casos positivos ✅
-C) El modelo detecta todos los positivos pero tiene muchos falsos positivos
-D) El modelo tiene bajo rendimiento en general
-
-**Por qué B:** Alta precision = confiable cuando dice SÍ. Bajo recall = se pierde muchos casos (muchos FN).
-
----
-
-### Pregunta 5:
-
-**¿Cuál es la principal limitación de usar solo Accuracy para evaluar un clasificador?**
-
-A) Es difícil de calcular
-B) No funciona bien con clases desbalanceadas ✅
-C) No está disponible en Azure ML
-D) Solo funciona para clasificación binaria
-
-**Por qué B:** Con clases desbalanceadas (ej: 95% clase A, 5% clase B), un modelo que siempre predice clase A tendrá 95% accuracy pero es inútil.
-
----
-
-## ✅ TAREAS DE HOY (Miércoles)
-
-### 1. Microsoft Learn (45 min)
-
-**Módulos a completar:**
-
-- **"Creación de modelos de clasificación"**
-- **"Entrenamiento y evaluación de modelos de clasificación"**
-
-Link: https://learn.microsoft.com/es-es/training/modules/train-evaluate-classification-models/
-
----
-
-### 2. Ejercicio: Calcular métricas (20 min)
-
-**Para cada matriz de confusión, calcula las 4 métricas:**
-
-**Escenario 1: Detector de productos defectuosos**
+**Escenario B: Sistema de recomendación de películas**
 
 ```
-                Bueno    Defectuoso
-Bueno            850         50
-Defectuoso        20         80
-
-Total: 1000 productos
+Precision = 70%
+Recall = 40%
 ```
 
-Calcula:
+**Pregunta:** ¿Qué métrica es más importante aquí?
 
-- TP = \_\_\_ 80
-- TN = \_\_\_ 850
-- FP = \_\_\_ 20
-- FN = \_\_\_ 50
-- Accuracy = \_\_\_ 0.93
-- Precision = \_\_\_ 0.8
-- Recall = \_\_\_ 0.61
-- ¿Es un buen modelo? \_\_\_
+<details>
+<summary>Ver solución</summary>
+
+**Priorizar: Precision**
+
+**Razón:**
+
+- **FP:** Recomendar película mala → usuario molesto, pierde confianza
+- **FN:** No recomendar película buena → hay muchas otras películas
+
+Es mejor recomendar pocas películas pero muy relevantes (alta Precision) que recomendar muchas incluyendo malas (bajo Precision).
+
+El usuario no puede ver todas las películas buenas de todas formas (FN es menos grave).
+
+</details>
 
 ---
 
-**Escenario 2: Clasificador de emociones (positivo/negativo)**
+### Ejercicio 3: Matriz de confusión multiclase
+
+**Clasificador de flores (3 clases):**
 
 ```
-               Negativo   Positivo
-Negativo          300        50
-Positivo          100       550
-
-Total: 1000 reseñas
+              Setosa  Versicolor  Virginica
+Setosa          45        3          2
+Versicolor       1       38          6
+Virginica        0        4         46
 ```
 
-Calcula:
+**Calcula:**
 
-- TP = \_\_\_
-- TN = \_\_\_
-- FP = \_\_\_
-- FN = \_\_\_
-- Accuracy = \_\_\_
-- Precision = \_\_\_
-- Recall = \_\_\_
+1. Accuracy total
+2. Precision para cada clase
+3. Recall para cada clase
+
+<details>
+<summary>Ver solución</summary>
+
+**Total de muestras:** 45+3+2+1+38+6+0+4+46 = 145
+
+**1. Accuracy total:**
+
+```
+Predicciones correctas = 45 + 38 + 46 = 129
+Accuracy = 129 / 145 = 0.890 = 89%
+```
+
+**2. Precision por clase:**
+
+**Setosa:**
+
+```
+TP = 45
+FP = 1 + 0 = 1
+Precision = 45 / (45 + 1) = 45/46 = 0.978 = 97.8%
+```
+
+**Versicolor:**
+
+```
+TP = 38
+FP = 3 + 4 = 7
+Precision = 38 / (38 + 7) = 38/45 = 0.844 = 84.4%
+```
+
+**Virginica:**
+
+```
+TP = 46
+FP = 2 + 6 = 8
+Precision = 46 / (46 + 8) = 46/54 = 0.852 = 85.2%
+```
+
+**3. Recall por clase:**
+
+**Setosa:**
+
+```
+TP = 45
+FN = 3 + 2 = 5
+Recall = 45 / (45 + 5) = 45/50 = 0.90 = 90%
+```
+
+**Versicolor:**
+
+```
+TP = 38
+FN = 1 + 4 = 5
+Recall = 38 / (38 + 5) = 38/43 = 0.884 = 88.4%
+```
+
+**Virginica:**
+
+```
+TP = 46
+FN = 6 + 0 = 6
+Recall = 46 / (46 + 6) = 46/52 = 0.885 = 88.5%
+```
+
+**Interpretación:**
+
+- Setosa es la más fácil de identificar (alta Precision)
+- Las tres clases tienen Recall similar (~88-90%)
+- Versicolor y Virginica se confunden más entre sí
+</details>
 
 ---
 
-**Escenario 3: Detector médico de diabetes**
+## 📝 FLASHCARDS para crear HOY
 
-```
-               Sano    Diabético
-Sano           920        10
-Diabético       40        30
-
-Total: 1000 pacientes
-```
-
-Calcula todas las métricas y responde:
-
-- ¿Qué métrica es más preocupante? \_\_\_
-- ¿Por qué? \_\_\_
-- ¿Qué debería mejorar este modelo? \_\_\_
-
----
-
-### 3. Crea Flashcards (15 min)
-
-**Crea estas 15 tarjetas:**
+### Conceptos básicos
 
 **Tarjeta 1:**
 
-- Frente: "¿Qué mide Accuracy?"
-- Atrás: "Porcentaje de predicciones correctas. (TP+TN)/Total"
+- Frente: "¿Qué predice Clasificación?"
+- Atrás: "Categorías o clases (spam/no spam, perro/gato), NO números"
 
 **Tarjeta 2:**
 
-- Frente: "¿Qué mide Precision?"
-- Atrás: "De lo que dije positivo, ¿cuánto era realmente positivo? TP/(TP+FP)"
+- Frente: "Diferencia Clasificación vs Regresión"
+- Atrás: "Clasificación → categorías. Regresión → números continuos"
 
 **Tarjeta 3:**
 
-- Frente: "¿Qué mide Recall?"
-- Atrás: "De todo lo que ERA positivo, ¿cuánto detecté? TP/(TP+FN)"
+- Frente: "True Positive (TP)"
+- Atrás: "Realidad: Positivo. Predicción: Positivo. ✅ CORRECTO"
 
 **Tarjeta 4:**
 
-- Frente: "¿Qué es True Positive (TP)?"
-- Atrás: "Predije positivo Y era positivo. ✅ ¡Acierto!"
+- Frente: "False Positive (FP)"
+- Atrás: "Realidad: Negativo. Predicción: Positivo. ❌ Falsa alarma"
 
 **Tarjeta 5:**
 
-- Frente: "¿Qué es False Positive (FP)?"
-- Atrás: "Predije positivo pero era negativo. ❌ Falsa alarma"
+- Frente: "False Negative (FN)"
+- Atrás: "Realidad: Positivo. Predicción: Negativo. ❌ Se me escapó"
+
+### Métricas
 
 **Tarjeta 6:**
 
-- Frente: "¿Qué es False Negative (FN)?"
-- Atrás: "Predije negativo pero era positivo. ❌ Se me escapó"
+- Frente: "Fórmula Accuracy"
+- Atrás: "(TP + TN) / Total. % de predicciones correctas"
 
 **Tarjeta 7:**
 
-- Frente: "¿Qué es True Negative (TN)?"
-- Atrás: "Predije negativo Y era negativo. ✅ ¡Acierto!"
+- Frente: "Fórmula Precision"
+- Atrás: "TP / (TP + FP). ¿Confiable cuando digo SÍ?"
 
 **Tarjeta 8:**
 
-- Frente: "¿Cuándo priorizar Precision?"
-- Atrás: "Cuando los FALSOS POSITIVOS son muy costosos. Ej: email spam, recomendaciones"
+- Frente: "Fórmula Recall"
+- Atrás: "TP / (TP + FN). ¿Detecto todos los SÍ reales?"
 
 **Tarjeta 9:**
 
-- Frente: "¿Cuándo priorizar Recall?"
-- Atrás: "Cuando los FALSOS NEGATIVOS son peligrosos. Ej: detector de cáncer, fraude"
+- Frente: "Fórmula F1-Score"
+- Atrás: "2 × (Precision × Recall) / (Precision + Recall). Balance entre P y R"
+
+### ROC y AUC
 
 **Tarjeta 10:**
 
-- Frente: "¿Qué mide F1-Score?"
-- Atrás: "Balance entre Precision y Recall. Media armónica de ambas."
+- Frente: "¿Qué es ROC Curve?"
+- Atrás: "Gráfica de TPR (Recall) vs FPR en todos los umbrales posibles"
 
 **Tarjeta 11:**
 
-- Frente: "Problema con Accuracy en clases desbalanceadas"
-- Atrás: "Un modelo tonto que predice siempre la clase mayoritaria tendrá alta accuracy pero es inútil"
+- Frente: "¿Qué es AUC?"
+- Atrás: "Área bajo la curva ROC. Rango: 0-1. Mide capacidad de discriminación del modelo"
 
 **Tarjeta 12:**
 
-- Frente: "Trade-off Precision vs Recall"
-- Atrás: "Al aumentar Precision, baja Recall y viceversa. No puedes maximizar ambas simultáneamente"
+- Frente: "Interpretación AUC = 0.85"
+- Atrás: "85% probabilidad de que el modelo dé mayor score a caso positivo que negativo. Modelo muy bueno"
 
 **Tarjeta 13:**
 
-- Frente: "Ejemplo de Falso Positivo peligroso"
-- Atrás: "Detector de spam marca email importante como spam → pierdes info crítica"
+- Frente: "AUC = 0.5 significa..."
+- Atrás: "Modelo aleatorio, no mejor que lanzar una moneda"
 
 **Tarjeta 14:**
 
-- Frente: "Ejemplo de Falso Negativo peligroso"
-- Atrás: "Detector médico dice 'no hay cáncer' pero sí lo hay → paciente no recibe tratamiento"
+- Frente: "Ventaja de AUC sobre Accuracy"
+- Atrás: "No depende del umbral, funciona bien con clases desbalanceadas"
+
+### Cuándo usar cada métrica
 
 **Tarjeta 15:**
 
-- Frente: "Diferencia clave: Regresión vs Clasificación métricas"
-- Atrás: "Regresión: MAE, RMSE, R² (para números). Clasificación: Accuracy, Precision, Recall, F1 (para categorías)"
+- Frente: "¿Cuándo priorizar Precision?"
+- Atrás: "Cuando Falsos Positivos son muy costosos (ej: spam, condena judicial)"
+
+**Tarjeta 16:**
+
+- Frente: "¿Cuándo priorizar Recall?"
+- Atrás: "Cuando Falsos Negativos son muy peligrosos (ej: cáncer, fraude, antivirus)"
+
+**Tarjeta 17:**
+
+- Frente: "Trade-off Precision vs Recall"
+- Atrás: "No puedes maximizar ambos simultáneamente. Aumentar uno reduce el otro"
+
+**Tarjeta 18:**
+
+- Frente: "Ejemplo FP peligroso"
+- Atrás: "Detector de spam marca email importante como spam → pierdes info crítica"
+
+**Tarjeta 19:**
+
+- Frente: "Ejemplo FN peligroso"
+- Atrás: "Detector médico dice 'no hay cáncer' pero sí lo hay → paciente no recibe tratamiento"
+
+**Tarjeta 20:**
+
+- Frente: "¿Cuándo usar AUC?"
+- Atrás: "Clases desbalanceadas, comparar modelos, cuando necesitas métrica independiente del umbral"
 
 ---
 
-## 📝 CONCEPTOS CLAVE DEL MIÉRCOLES
+## 🎯 RESUMEN DEL DÍA
 
-**Memoriza:**
+### Lo que aprendiste hoy:
 
-- Clasificación predice categorías (no números)
-- Matriz de confusión: TP, TN, FP, FN
-- Accuracy = aciertos totales / total
-- Precision = confiable cuando digo SÍ
-- Recall = detecto todos los SÍ reales
-- F1 = balance entre Precision y Recall
-- FP = falsa alarma, FN = se me escapó
-- Prioriza Precision cuando FP sean costosos
-- Prioriza Recall cuando FN sean peligrosos
+✅ **Clasificación vs Regresión**
 
----
+- Clasificación predice categorías
+- Regresión predice números
 
-## ✅ CHECKLIST MIÉRCOLES
-
-- [ ] Entiendo qué es clasificación vs regresión
-- [ ] Domino la matriz de confusión (TP, TN, FP, FN)
-- [ ] Sé qué miden Accuracy, Precision, Recall, F1
-- [ ] Puedo calcular métricas de una matriz de confusión
-- [ ] Entiendo cuándo priorizar Precision vs Recall
-- [ ] Sé el problema de Accuracy con clases desbalanceadas
-- [ ] Completé los 3 ejercicios de cálculo
-- [ ] Creé 15 flashcards nuevas
-- [ ] Repasé flashcards de Lunes y Martes (10 min)
-- [ ] Puedo explicar las métricas en voz alta
-
----
-
-## 📚 RESPUESTAS A LOS EJERCICIOS
-
-### Escenario 1: Detector de productos defectuosos
-
-```
-                Bueno    Defectuoso
-Bueno            850         50
-Defectuoso        20         80
-```
-
-**Identificar valores:**
-
-- **TP = 80** (defectuosos detectados correctamente)
-- **TN = 850** (buenos detectados correctamente)
-- **FP = 20** (buenos marcados como defectuosos - desperdicio)
-- **FN = 50** (defectuosos que pasaron como buenos - PELIGROSO)
-
-**Cálculos:**
-
-```
-Accuracy = (80 + 850) / 1000 = 930 / 1000 = 0.93 = 93%
-
-Precision = 80 / (80 + 20) = 80 / 100 = 0.80 = 80%
-
-Recall = 80 / (80 + 50) = 80 / 130 = 0.615 = 61.5%
-
-F1 = 2 × (0.80 × 0.615) / (0.80 + 0.615) = 0.695 = 69.5%
-```
-
-**Evaluación:**
-
-- ✅ Accuracy alta (93%) - pero puede engañar
-- ✅ Precision aceptable (80%) - cuando marca defectuoso, suele acertar
-- ⚠️ Recall bajo (61.5%) - se pierde muchos defectuosos (FN = 50)
-- **Problema:** 50 productos defectuosos llegan a clientes → quejas, devoluciones
-- **Necesita mejorar:** RECALL (detectar más defectuosos)
-
----
-
-### Escenario 2: Clasificador de emociones
-
-```
-               Negativo   Positivo
-Negativo          300        50
-Positivo          100       550
-```
-
-**Identificar valores:**
-
-- **TP = 550** (positivos detectados correctamente)
-- **TN = 300** (negativos detectados correctamente)
-- **FP = 100** (negativos marcados como positivos)
-- **FN = 50** (positivos marcados como negativos)
-
-**Cálculos:**
-
-```
-Accuracy = (550 + 300) / 1000 = 850 / 1000 = 0.85 = 85%
-
-Precision = 550 / (550 + 100) = 550 / 650 = 0.846 = 84.6%
-
-Recall = 550 / (550 + 50) = 550 / 600 = 0.917 = 91.7%
-
-F1 = 2 × (0.846 × 0.917) / (0.846 + 0.917) = 0.880 = 88%
-```
-
-**Evaluación:**
-
-- ✅ Accuracy buena (85%)
-- ✅ Precision buena (84.6%)
-- ✅✅ Recall excelente (91.7%)
-- ✅ F1 muy bueno (88%)
-- **Conclusión:** Modelo BUENO en general, buen balance
-
----
-
-### Escenario 3: Detector médico de diabetes
-
-```
-               Sano    Diabético
-Sano           920        10
-Diabético       40        30
-```
-
-**Identificar valores:**
-
-- **TP = 30** (diabéticos detectados)
-- **TN = 920** (sanos detectados)
-- **FP = 40** (sanos marcados como diabéticos - falsa alarma)
-- **FN = 10** (diabéticos marcados como sanos - PELIGROSÍSIMO)
-
-**Cálculos:**
-
-```
-Accuracy = (30 + 920) / 1000 = 950 / 1000 = 0.95 = 95%
-
-Precision = 30 / (30 + 40) = 30 / 70 = 0.429 = 42.9%
-
-Recall = 30 / (30 + 10) = 30 / 40 = 0.75 = 75%
-
-F1 = 2 × (0.429 × 0.75) / (0.429 + 0.75) = 0.545 = 54.5%
-```
-
-**Evaluación y análisis:**
-
-- ✅ Accuracy muy alta (95%) - PERO ES ENGAÑOSA
-- ❌ Precision baja (42.9%) - muchas falsas alarmas (40 sanos diagnosticados)
-- ⚠️ Recall moderado (75%) - pero 10 diabéticos no detectados
-- ❌ F1 bajo (54.5%) - modelo pobre en general
-
-**¿Qué métrica es más preocupante?**
-**RECALL (75%)**
-
-**¿Por qué?**
-
-- FN = 10 significa que 10 personas con diabetes NO fueron detectadas
-- Estas personas NO recibirán tratamiento
-- Consecuencia: Complicaciones graves, posible muerte
-- En medicina, los FN son CRÍTICOS
-
-**¿Qué debería mejorar?**
-
-- **PRIORIDAD 1:** Aumentar RECALL (detectar más diabéticos)
-- Mejor tener 100 falsas alarmas que perder 1 caso real
-- Después de mejorar recall, trabajar en precision para reducir falsas alarmas
-
----
-
-## 🎯 COMPARACIÓN FINAL: Regresión vs Clasificación
-
-### 📊 Tabla resumen completa:
-
-| Aspecto                       | REGRESIÓN                               | CLASIFICACIÓN                     |
-| ----------------------------- | --------------------------------------- | --------------------------------- |
-| **Predice**                   | Números continuos                       | Categorías discretas              |
-| **Ejemplo output**            | 150,000€, 25.5°C                        | "Spam", "Gato", "Sí"              |
-| **Pregunta**                  | "¿Cuánto?"                              | "¿Cuál?"                          |
-| **Métricas principales**      | MAE, RMSE, R²                           | Accuracy, Precision, Recall, F1   |
-| **Mejor valor métricas**      | MAE/RMSE: 0 (bajo), R²: 1 (alto)        | Todas: 1 (alto)                   |
-| **Concepto clave evaluación** | Error numérico y variabilidad explicada | Matriz de confusión               |
-| **Problema común**            | Overfitting                             | Clases desbalanceadas             |
-| **Ejemplos**                  | Precio casas, temperatura, ventas       | Spam/no spam, fraude, diagnóstico |
-
----
-
-## 🎓 EJERCICIO MENTAL: Identifica el tipo
-
-**Para cada problema, ¿es Regresión o Clasificación?**
-
-1. Predecir si un cliente comprará o no
-   - **Clasificación** (Sí/No)
-
-2. Estimar cuánto gastará un cliente en su próxima compra
-   - **Regresión** (cantidad en €)
-
-3. Identificar si una imagen muestra un perro, gato o pájaro
-   - **Clasificación** (3 categorías)
-
-4. Predecir cuántos días de hospitalización necesitará un paciente
-   - **Regresión** (número de días)
-
-5. Determinar el nivel de satisfacción: bajo, medio, alto
-   - **Clasificación** (3 categorías)
-
-6. Estimar el precio de un coche usado
-   - **Regresión** (precio en €)
-
-7. Clasificar emails en trabajo, personal, promociones, spam
-   - **Clasificación** (4 categorías)
-
-8. Predecir la temperatura máxima de mañana
-   - **Regresión** (temperatura en °C)
-
----
-
-## 📋 CHEAT SHEET PARA IMPRIMIR
-
-```
-╔══════════════════════════════════════════════════════════╗
-║        MÉTRICAS DE CLASIFICACIÓN - CHEAT SHEET          ║
-╠══════════════════════════════════════════════════════════╣
-║ MATRIZ DE CONFUSIÓN                                     ║
-║                      REALIDAD                            ║
-║               Positivo      Negativo                     ║
-║  PREDICCIÓN  ┌──────────┬──────────┐                    ║
-║  Positivo    │    TP    │    FP    │                    ║
-║              │  ✅✅    │  ❌      │                    ║
-║              ├──────────┼──────────┤                    ║
-║  Negativo    │    FN    │    TN    │                    ║
-║              │  ❌      │  ✅✅    │                    ║
-║              └──────────┴──────────┘                    ║
-╠══════════════════════════════════════════════════════════╣
-║ ACCURACY (Exactitud)                                     ║
-║ • Fórmula: (TP + TN) / Total                            ║
-║ • Qué mide: % de aciertos totales                       ║
-║ • Cuándo: Clases balanceadas                            ║
-║ • ⚠️ Engañosa con clases desbalanceadas                 ║
-╠══════════════════════════════════════════════════════════╣
-║ PRECISION (Precisión)                                    ║
-║ • Fórmula: TP / (TP + FP)                               ║
-║ • Qué mide: Confiable cuando digo SÍ                    ║
-║ • Pregunta: "De lo que dije positivo, ¿cuánto lo era?" ║
-║ • Prioriza: Cuando FP son costosos                      ║
-║ • Ejemplo: Email spam, recomendaciones                  ║
-╠══════════════════════════════════════════════════════════╣
-║ RECALL (Exhaustividad/Sensibilidad)                     ║
-║ • Fórmula: TP / (TP + FN)                               ║
-║ • Qué mide: Detecto todos los positivos                 ║
-║ • Pregunta: "De todo lo positivo, ¿cuánto detecté?"    ║
-║ • Prioriza: Cuando FN son peligrosos                    ║
-║ • Ejemplo: Cáncer, fraude, seguridad                    ║
-╠══════════════════════════════════════════════════════════╣
-║ F1-SCORE (Balance)                                       ║
-║ • Fórmula: 2×(P×R)/(P+R)                                ║
-║ • Qué mide: Balance entre Precision y Recall            ║
-║ • Cuándo: Necesitas balance, clases desbalanceadas     ║
-║ • Media armónica (penaliza desequilibrios)              ║
-╠══════════════════════════════════════════════════════════╣
-║ REGLAS RÁPIDAS                                           ║
-║ • TP = Acierto positivo ✅✅                             ║
-║ • TN = Acierto negativo ✅✅                             ║
-║ • FP = Falsa alarma ❌ (dije SÍ, era NO)                ║
-║ • FN = Se me escapó ❌ (dije NO, era SÍ)                ║
-║                                                          ║
-║ • ↑ Precision → ↓ Recall (trade-off)                    ║
-║ • Accuracy engaña en clases desbalanceadas              ║
-║ • FN peligrosos → prioriza Recall                       ║
-║ • FP costosos → prioriza Precision                      ║
-╚══════════════════════════════════════════════════════════╝
-```
-
----
-
-## 🎊 ¡EXCELENTE TRABAJO EN EL MIÉRCOLES!
-
-**Lo que has logrado hoy:**
-
-✅ **Dominas clasificación en profundidad**
-
-- Clasificación binaria y multiclase
-- Diferencia con regresión
-
-✅ **Entiendes la matriz de confusión**
+✅ **Matriz de confusión**
 
 - TP, TN, FP, FN
-- Qué significa cada uno
+- Cómo identificar cada uno
 
-✅ **Dominas las 4 métricas clave**
+✅ **4 métricas principales**
 
-- Accuracy, Precision, Recall, F1-Score
-- Cuándo usar cada una
-- Cómo calcularlas
+- Accuracy: % aciertos totales
+- Precision: confiable cuando digo SÍ
+- Recall: detecto todos los SÍ reales
+- F1: balance entre P y R
 
-✅ **Entiendes el trade-off Precision vs Recall**
+✅ **ROC Curve y AUC**
 
-- Por qué no puedes maximizar ambos
-- Cuándo priorizar cada uno
+- ROC: gráfica TPR vs FPR
+- AUC: área bajo curva (0-1)
+- Interpretación de AUC
+- Ventajas sobre otras métricas
 
-✅ **Puedes evaluar modelos de clasificación**
+✅ **Trade-off Precision vs Recall**
 
-- Interpretar métricas en contexto
-- Identificar problemas
-- Sugerir mejoras
+- No puedes maximizar ambos
+- Depende del costo de FP vs FN
+- Cómo decidir cuál priorizar
+
+✅ **Aplicación práctica**
+
+- Detector spam: priorizar Precision
+- Detector cáncer: priorizar Recall
+- Productos defectuosos: depende del costo
 
 ---
 
-## 📅 MAÑANA (Jueves):
+## 📊 Tu progreso en Semana 2
 
-**Tema:** Azure Machine Learning en detalle
+```
+Semana 2: Machine Learning en profundidad
+├── ✅ Lunes 10: Tipos de ML profundo
+├── ✅ Martes 11: Regresión y métricas
+├── ✅ Miércoles 12: Clasificación y métricas (HOY - ACTUALIZADO)
+├── 📅 Jueves 13: Azure ML workspace
+├── 📅 Viernes 14: AutoML
+└── 📅 Sábado 15: Lab - Crear primer modelo
+```
+
+**¡Ya completaste el 43% de la Semana 2!** 🎉
+
+---
+
+## 📅 MAÑANA (Jueves 13 de noviembre)
+
+**Tema:** Azure Machine Learning Workspace en detalle
+
+**Lo que aprenderás:**
 
 - Qué es Azure ML workspace
-- Componentes principales
-- Designer (herramienta visual)
+- Componentes principales (compute, datastores, datasets)
+- Azure ML Designer (herramienta visual)
 - Cómo desplegar modelos
-- Azure ML vs otros servicios
-
-**Prepárate para:** Conectar toda la teoría con la práctica en Azure
+- Diferencia entre Azure ML y otros servicios
 
 ---
 
-## 💡 CONEXIÓN CON LO QUE VIENE
+## 💡 CONSEJOS PARA HOY
 
-**Esta semana:**
-
-- ✅ Lunes: Tipos de ML (supervisado, no supervisado, refuerzo)
-- ✅ Martes: Regresión y métricas (MAE, RMSE, R²)
-- ✅ Miércoles: Clasificación y métricas (HOY)
-- 📅 Jueves: Azure ML workspace
-- 📅 Viernes: Automated ML (AutoML)
-- 📅 Sábado: LAB - Crear tu primer modelo real
-
-**El sábado pondrás en práctica TODO esto:**
-
-- Crearás un modelo de clasificación o regresión
-- Verás las métricas en Azure ML
-- Interpretarás los resultados
-- Entenderás qué significa cada número
+1. **Practica con los ejercicios** - no solo leas
+2. **Crea las flashcards inmediatamente** después de cada sección
+3. **Relaciona con el Martes:**
+   - Martes: métricas para números (MAE, RMSE, R²)
+   - Miércoles: métricas para categorías (Accuracy, Precision, Recall, AUC)
+4. **Piensa en ejemplos reales** de tu vida/trabajo
+5. **La sección de ROC y AUC** es nueva y importante - repásala bien
 
 ---
 
-## 🎯 MINI QUIZ FINAL (5 min)
+## 🎓 PARA EL EXAMEN - PREGUNTAS TÍPICAS
 
-**Responde mentalmente (sin mirar):**
+**Ejemplo 1:**
+_"Un modelo de detección de fraude tiene 95% de Accuracy pero solo detecta el 30% de los fraudes reales. ¿Cuál es el problema?"_
 
-1. ¿Qué es un Falso Positivo?
-2. ¿Qué métrica usarías en un detector de cáncer?
-3. Si Precision = 0.90 y Recall = 0.40, ¿qué problema hay?
-4. ¿Por qué Accuracy puede engañar?
-5. ¿Qué mide F1-Score?
+- **Respuesta:** Bajo Recall (solo 30%). El modelo tiene alta Accuracy porque la mayoría son transacciones legítimas, pero se pierde el 70% de los fraudes (Falsos Negativos).
 
-**Respuestas:**
+**Ejemplo 2:**
+_"¿Qué métrica priorizarías en un sistema que detecta defectos críticos en piezas de avión?"_
 
-1. Dije "positivo" pero era "negativo" - falsa alarma
-2. RECALL (no quiero perderme ningún caso)
-3. Modelo muy conservador, se pierde muchos casos (bajo recall)
-4. Con clases desbalanceadas, un modelo tonto puede tener alta accuracy
-5. Balance entre Precision y Recall
+- **Respuesta:** Recall - no podemos permitirnos perder ningún defecto crítico (Falsos Negativos son peligrosos).
 
-**Si acertaste 4-5:** ¡Perfecto! Listo para mañana
-**Si acertaste 2-3:** Repasa matriz de confusión y métricas
-**Si acertaste 0-1:** Repasa toda la sección de métricas 15 min
+**Ejemplo 3:**
+_"Tu modelo tiene Precision=90% y Recall=50%. ¿Qué significa?"_
 
----
+- **Respuesta:** El modelo es muy confiable cuando predice positivo (90%), pero se pierde la mitad de los casos positivos reales (50%).
 
-## 📖 RECURSOS ADICIONALES (Opcional)
+**Ejemplo 4:**
+_"¿Qué representa el área bajo la curva ROC (AUC)?"_
 
-**Si quieres profundizar:**
+- **Respuesta:** La capacidad del modelo para discriminar entre clases. AUC=0.85 significa 85% de probabilidad de que el modelo dé mayor score a un caso positivo que a uno negativo.
 
-**Videos recomendados (YouTube):**
+**Ejemplo 5:**
+_"Un modelo tiene AUC=0.92. ¿Es un buen modelo?"_
 
-- "Confusion Matrix explained" - StatQuest
-- "Precision and Recall" - explicaciones visuales
-- "F1 Score explained" - tutoriales cortos
-- "Classification metrics" - comparaciones
+- **Respuesta:** Sí, es un modelo excelente (0.9-1.0 es rango excelente). Tiene muy buena capacidad de separar clases positivas y negativas.
 
-**Microsoft Learn:**
+**Ejemplo 6:**
+_"¿Por qué AUC es mejor que Accuracy para clases desbalanceadas?"_
 
-- "Train and evaluate classification models"
-- "Understand classification metrics"
-
-**Documentación Azure ML:**
-
-- Cómo interpretar métricas en Azure ML
-- Matriz de confusión en Azure ML Studio
+- **Respuesta:** Accuracy puede ser engañosa con clases desbalanceadas (un modelo que siempre predice la clase mayoritaria puede tener alta Accuracy pero ser inútil). AUC evalúa la capacidad de discriminación independientemente del desbalanceo.
 
 ---
 
-## 💭 REFLEXIÓN FINAL DEL DÍA
+## ✅ CHECKLIST DE HOY
 
-**Antes de terminar, reflexiona 2 minutos:**
+Antes de terminar, asegúrate de:
 
-1. ¿Qué métrica te pareció más útil? ¿Por qué?
-2. ¿Puedes pensar en un problema de clasificación en tu trabajo/vida?
-3. ¿Qué priorizarías: Precision o Recall? ¿Por qué?
-
-**Ejemplo de reflexión:**
-"Recall me parece la más crítica en medicina. En mi trabajo de atención al cliente, podríamos clasificar tickets por urgencia. Priorizaría Recall para no perder tickets urgentes..."
-
----
-
-## 🌙 ANTES DE DORMIR (5 min)
-
-**Repaso relámpago:**
-
-- Cierra los ojos
-- Visualiza la matriz de confusión: TP, TN, FP, FN
-- Recuerda: Accuracy = total aciertos, Precision = confiable, Recall = detecta todos
-- Piensa en ejemplos donde FP son peores vs donde FN son peores
-
-**Repasa tus flashcards nuevas 2 veces**
-
-**Duerme bien.** Mañana conectamos todo con Azure ML. 😴
+- [-] Entender clasificación vs regresión
+- [-] Dominar matriz de confusión (TP, TN, FP, FN)
+- [-] Saber calcular las 4 métricas principales
+- [-] **Entender qué son ROC y AUC**
+- [-] **Saber cuándo usar AUC vs otras métricas**
+- [-] Comprender trade-off Precision vs Recall
+- [-] Completar los 3 ejercicios
+- [-] Crear las 20 flashcards en Anki
+- [-] Repasar flashcards de Lunes y Martes
 
 ---
 
-## 📊 PROGRESO SEMANA 2
+## 🚀 MOTIVACIÓN
 
-```
-Lunes:     ████████████████████ 100% ✅
-Martes:    ████████████████████ 100% ✅
-Miércoles: ████████████████████ 100% ✅
-Jueves:    ░░░░░░░░░░░░░░░░░░░░   0%
-Viernes:   ░░░░░░░░░░░░░░░░░░░░   0%
-Sábado:    ░░░░░░░░░░░░░░░░░░░░   0%
-```
+**¡Excelente progreso!** Clasificación y sus métricas son conceptos **fundamentales** en ML.
 
-**Horas Semana 2:** 4.5/10 horas completadas (45%) ✅
-**Progreso Total:** 14.5/60 horas (24.2%) 📈
+**Lo que dominas ahora:**
+
+- ✅ Tipos de ML
+- ✅ Regresión completa
+- ✅ Clasificación completa
+- ✅ **ROC y AUC** (concepto avanzado)
+
+## **Mañana:** Conectarás todo esto con Azure ML - verás estas métricas en acción.
+
+**¡Que tengas un excelente estudio!** 📚💻
+
+**Nos vemos mañana para Azure ML Workspace.** 🚀
 
 ---
 
-**¡Nos vemos mañana Jueves para Azure Machine Learning workspace!** 🚀
-
-**Mañana aprenderás:**
-
-- Qué es Azure ML workspace y sus componentes
-- Datasets, experiments, models, endpoints
-- Azure ML Designer (visual, sin código)
-- Diferencia entre Azure ML y Azure AI Services
-- Cuándo usar cada uno
-
-**Será el puente entre teoría y práctica.** 💪
+_Última actualización: Miércoles 12 de noviembre 2025_  
+_Semana 2 de 6 - Día 3 de 7_
